@@ -1,37 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <title>توليد ملف Excel</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>توليد تقرير التوطين الوهمي</title>
+  <!-- رابط CSS — تأكد أن الملف اسمه: style.css (صغير كله) -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>إدخال المعايير</h2>
-  <label>الاسم: <input id="name" type="text"></label><br><br>
-  <label>التاريخ: <input id="date" type="date"></label><br><br>
-  <label>الدرجة: <input id="grade" type="number"></label><br><br>
-  <button onclick="generateExcel()">توليد وتنزيل Excel</button>
+  <div class="container">
+    <h2>نموذج تقرير التوطين الوهمي 2025</h2>
 
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.full.min.js"></script>
-  <script>
-    function generateExcel() {
-      // 1. قراءة المدخلات
-      const name = document.getElementById('name').value || 'غير معروف';
-      const date = document.getElementById('date').value || new Date().toISOString().split('T')[0];
-      const grade = document.getElementById('grade').value || 0;
+    <label>اسم الموظف:</label>
+    <input type="text" id="empName" placeholder="أدخل الاسم">
 
-      // 2. إنشاء ورقة بيانات
-      const ws = XLSX.utils.aoa_to_sheet([
-        ['الاسم', 'التاريخ', 'الدرجة'],
-        [name, date, grade]
-      ]);
+    <label>رقم الهوية:</label>
+    <input type="text" id="idNumber" placeholder="أدخل رقم الهوية">
 
-      // 3. كتابة الملف
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "التقرير");
+    <div class="indicators">
+      <h3>اختر المؤشرات التي تنطبق</h3>
+      <div id="indicatorsList"></div>
+      <div class="total">المجموع: <span id="totalPercent">0</span>%</div>
+    </div>
 
-      // 4. تنزيل
-      XLSX.writeFile(wb, "التقرير.xlsx");
-    }
-  </script>
+    <button id="generateBtn">📥 توليد وتنزيل Excel</button>
+    <div class="note">✓ يعمل دون إنترنت — لا يحتاج اتصال</div>
+  </div>
+
+  <!-- ربط الجافا سكريبت في نهاية <body> -->
+  <script src="script.js"></script>
 </body>
 </html>
