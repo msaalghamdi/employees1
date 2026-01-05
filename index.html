@@ -2,73 +2,53 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام تقارير التوطين المتكامل</title>
+    <title>نظام تقارير التوطين المتطور 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 20px; direction: rtl; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        
         .section { background: #fdfdfd; padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 25px; }
-        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #444; }
+        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; color: #444; font-size: 0.9em; }
         input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-
         .indicator-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .col-desc { flex: 1; font-size: 14px; }
-        .col-weight { width: 60px; text-align: center; font-weight: bold; color: #e74c3c; }
-        
+        .col-desc { flex: 1; padding: 0 10px; }
         .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        .btn { padding: 12px 25px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; }
+        .btn { padding: 15px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; flex: 1; max-width: 250px; }
         .btn-weights { background: #34495e; }
         .btn-results { background: #27ae60; }
         .btn:hover { opacity: 0.8; transform: translateY(-2px); }
-
-        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-top: 10px; }
-        .danger { background: #fadbd8; color: #c0392b; }
-        .success { background: #d4efdf; color: #1e8449; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>نظام تقارير التوطين الوهمي</h2>
+    <h2>نظام تقارير التوطين - 2026</h2>
 
     <div class="section">
         <h3>بيانات المنشأة والموظف</h3>
         <div class="grid-inputs">
-            <div>
-                <label>اسم الموظف</label>
-                <input type="text" id="empName" placeholder="الاسم الرباعي">
-            </div>
-            <div>
-                <label>رقم الهوية</label>
-                <input type="text" id="idNumber" placeholder="10xxxxxxxx">
-            </div>
-            <div>
-                <label>رقم السجل التجاري</label>
-                <input type="text" id="crNumber" placeholder="سجل تجاري رقم...">
-            </div>
-            <div>
-                <label>رقم المنشأة (HRSD)</label>
-                <input type="text" id="hrsdNumber" placeholder="رقم المنشأة لدى الوزارة">
-            </div>
+            <div><label>اسم الموظف</label><input type="text" id="empName"></div>
+            <div><label>رقم الهوية</label><input type="text" id="idNumber"></div>
+            <div><label>رقم السجل التجاري</label><input type="text" id="crNumber"></div>
+            <div><label>رقم المنشأة (HRSD)</label><input type="text" id="hrsdNumber"></div>
         </div>
     </div>
 
     <div class="section">
-        <h3>جدول الأوزان الاسترشادية</h3>
+        <h3>جدول الأوزان</h3>
         <div id="indicatorsList"></div>
-        <div style="text-align: left; font-size: 1.2em; margin-top: 15px; font-weight: bold;">
+        <div style="text-align: left; font-size: 1.3em; margin-top: 15px; font-weight: bold; color: #d35400;">
             إجمالي الدرجة: <span id="totalPercent">0</span>%
         </div>
     </div>
 
     <div class="section">
-        <h3>قسم النتائج والتوصيات</h3>
+        <h3>النتائج والتوصيات</h3>
         <div class="grid-inputs">
             <div>
-                <label>التوصية (بناءً على الدرجة)</label>
+                <label>التوصية</label>
                 <select id="recommendation">
                     <option value="علاقة عمل غير صحيحة">علاقة عمل غير صحيحة</option>
                     <option value="علاقة عمل صحيحة">علاقة عمل صحيحة</option>
@@ -85,7 +65,7 @@
         </div>
         <div style="margin-top: 15px;">
             <label>ملاحظات إضافية</label>
-            <textarea id="notes" rows="3" placeholder="اكتب أي ملاحظات إضافية هنا..."></textarea>
+            <textarea id="notes" rows="2"></textarea>
         </div>
     </div>
 
@@ -114,9 +94,9 @@
     function render() {
         document.getElementById('indicatorsList').innerHTML = indicators.map((ind, i) => `
             <div class="indicator-row">
-                <div style="width:30px">${ind.n}</div>
+                <div style="width:30px; font-weight:bold">${ind.n}</div>
                 <div class="col-desc">${ind.d}</div>
-                <div class="col-weight">${ind.w}%</div>
+                <div style="width:60px; color:red">${ind.w}%</div>
                 <input type="checkbox" class="chk" data-weight="${ind.w}" onchange="updateUI()" style="width:20px; height:20px;">
             </div>
         `).join('');
@@ -126,65 +106,52 @@
         let total = 0;
         document.querySelectorAll('.chk:checked').forEach(cb => total += parseInt(cb.dataset.weight));
         document.getElementById('totalPercent').textContent = total;
-        
-        // تحديث التوصية تلقائياً بناءً على 80 درجة
-        const recSelect = document.getElementById('recommendation');
-        if (total >= 80) {
-            recSelect.value = "علاقة عمل غير صحيحة";
-        } else {
-            recSelect.value = "علاقة عمل صحيحة";
-        }
+        document.getElementById('recommendation').value = (total >= 80) ? "علاقة عمل غير صحيحة" : "علاقة عمل صحيحة";
     }
 
-    // 1. وظيفة تصدير ملف الأوزان (نفس النمط السابق)
     function exportWeights() {
         const name = document.getElementById('empName').value || "موظف";
-        const rows = [
-            ["جدول الأوزان الاسترشادية للمراقب"],
-            ["الاسم:", name],
-            ["#", "المؤشر", "الوزن", "التحقق"],
+        const total = document.getElementById('totalPercent').textContent + "%";
+        
+        let rows = [
+            ["تقرير الأوزان الاسترشادية"],
+            ["الاسم:", name, "التاريخ:", new Date().toLocaleDateString('ar-SA')],
+            [""],
+            ["#", "المؤشر", "الوزن النسبي", "تم التحقق"]
         ];
+
         indicators.forEach((ind, i) => {
             const checked = document.querySelectorAll('.chk')[i].checked;
             rows.push([ind.n, ind.d, ind.w + "%", checked ? "نعم" : "لا"]);
         });
+
+        rows.push(["", "المجموع النهائي", total, ""]);
+
         const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws['!cols'] = [{wch: 5}, {wch: 50}, {wch: 15}, {wch: 12}];
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "الأوزان");
         XLSX.writeFile(wb, `${name}_الأوزان.xlsx`);
     }
 
-    // 2. وظيفة تصدير ملف النتائج (الملف الجديد)
     function exportResults() {
-        const name = document.getElementById('empName').value || "موظف";
-        const idNum = document.getElementById('idNumber').value;
-        const crNum = document.getElementById('crNumber').value;
-        const hrsdNum = document.getElementById('hrsdNumber').value;
-        const score = document.getElementById('totalPercent').textContent + "%";
-        const recommendation = document.getElementById('recommendation').value;
-        const justification = document.getElementById('justification').value;
-        const notes = document.getElementById('notes').value;
+        const name = document.getElementById('empName').value || "بدون_اسم";
+        const data = [[
+            "اسم الموظف", "رقم الهوية", "السجل التجاري", "رقم المنشأة", 
+            "درجة الأوزان", "التوصية النهائية", "مبررات إلغاء المدة", "الملاحظات"
+        ], [
+            name,
+            document.getElementById('idNumber').value,
+            document.getElementById('crNumber').value,
+            document.getElementById('hrsdNumber').value,
+            document.getElementById('totalPercent').textContent + "%",
+            document.getElementById('recommendation').value,
+            document.getElementById('justification').value,
+            document.getElementById('notes').value
+        ]];
 
-        const resultData = [
-            ["تقرير نتائج فحص علاقة العمل"],
-            [""],
-            ["البيان", "القيمة"],
-            ["اسم الموظف", name],
-            ["رقم الهوية", idNum],
-            ["رقم السجل التجاري", crNum],
-            ["رقم المنشأة (HRSD)", hrsdNum],
-            ["إجمالي درجة الأوزان", score],
-            ["التوصية النهائية", recommendation],
-            ["مبررات إلغاء المدة", justification],
-            ["الملاحظات", notes],
-            ["تاريخ التقرير", new Date().toLocaleDateString('ar-SA')]
-        ];
-
-        const ws = XLSX.utils.aoa_to_sheet(resultData);
-        
-        // تنسيق عرض الأعمدة في ملف النتائج
-        ws['!cols'] = [{ wch: 25 }, { wch: 50 }];
-
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        ws['!cols'] = Array(8).fill({wch: 22}); // عرض متساوي لجميع الأعمدة
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "النتائج");
         XLSX.writeFile(wb, `${name}_النتائج.xlsx`);
