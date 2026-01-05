@@ -2,143 +2,139 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <title>توليد تقرير التوطين الوهمي</title>
+  <title>نظام تقارير التوطين</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <style>
-    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 30px; background: #f8f9fa; direction: rtl; }
-    .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #2c3e50; }
-    label { display: inline-block; width: 120px; font-weight: bold; margin-top: 10px; }
-    input[type="text"] { width: 250px; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; }
-    .indicators { margin-top: 20px; }
-    .indicator-row {
-      display: flex;
-      align-items: center;
-      padding: 8px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .num { width: 40px; font-weight: bold; text-align: center; }
-    .desc { flex: 1; padding: 0 10px; }
-    .weight { width: 80px; text-align: center; color: #e74c3c; font-weight: bold; }
-    .checkbox { width: 20px; height: 20px; cursor: pointer; }
-    .total { font-size: 18px; font-weight: bold; color: #27ae60; margin-top: 20px; text-align: left; }
-    button {
-      background: #3498db; color: white; border: none; padding: 12px 25px;
-      font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;
-      display: block; margin: 30px auto 10px;
-    }
-    button:hover { background: #2980b9; }
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 20px; direction: rtl; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    h2 { color: #1a73e8; text-align: center; border-bottom: 2px solid #e8eaed; padding-bottom: 15px; }
+    .input-group { display: flex; gap: 20px; margin-bottom: 20px; flex-wrap: wrap; }
+    .input-field { flex: 1; min-width: 250px; }
+    label { display: block; font-weight: bold; margin-bottom: 5px; color: #3c4043; }
+    input[type="text"] { width: 100%; padding: 10px; border: 1px solid #dadce0; border-radius: 6px; box-sizing: border-box; }
+    .indicator-row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f1f3f4; transition: background 0.2s; }
+    .indicator-row:hover { background: #f8f9fa; }
+    .num { width: 45px; font-weight: bold; color: #70757a; }
+    .desc { flex: 1; font-size: 14px; line-height: 1.5; color: #202124; }
+    .weight { width: 70px; font-weight: bold; color: #d93025; text-align: center; }
+    .checkbox { width: 18px; height: 18px; margin-right: 15px; cursor: pointer; }
+    .total-box { background: #e6f4ea; padding: 15px; border-radius: 8px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
+    .total-text { font-size: 18px; font-weight: bold; color: #137333; }
+    button { background: #1a73e8; color: white; border: none; padding: 12px 30px; font-size: 16px; border-radius: 6px; cursor: pointer; display: block; margin: 25px auto; transition: background 0.3s; }
+    button:hover { background: #1557b0; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>نموذج تقرير التوطين الوهمي 2025</h2>
 
-    <label>اسم الموظف:</label>
-    <input type="text" id="empName" placeholder="أدخل الاسم">
+<div class="container">
+  <h2>توليد تقرير التوطين الوهمي</h2>
 
-    <label>رقم الهوية:</label>
-    <input type="text" id="idNumber" placeholder="أدخل رقم الهوية">
-
-    <div class="indicators">
-      <h3>المؤشرات (اختر ما ينطبق)</h3>
-      <div id="indicatorsList"></div>
-      <div class="total">المجموع: <span id="totalPercent">0</span>%</div>
+  <div class="input-group">
+    <div class="input-field">
+      <label>اسم الموظف</label>
+      <input type="text" id="empName" placeholder="مثال: محمد عبدالله">
     </div>
-
-    <button onclick="generateExcel()">توليد وتنزيل ملف Excel</button>
+    <div class="input-field">
+      <label>رقم الهوية</label>
+      <input type="text" id="idNumber" placeholder="10xxxxxxxx">
+    </div>
   </div>
 
-  <script>
-    const indicators = [
-      { num: 1, desc: "عدم وجود عقد عمل موثق", weight: 10 },
-      { num: 2, desc: "عدم وجود تأمين طبي للعامل", weight: 20 },
-      { num: "3a", desc: "موقع العمل", parent: "عدم وجود إجابات، أو إجابات غير صحيحة، أو مبهمة عند سؤال العامل محل الاشتباه بشأن موقع العمل وطبيعة عمله ونشاط المنشأة", weight: 20 },
-      { num: "3b", desc: "طبيعة عمله", parent: "", weight: 30 },
-      { num: "3c", desc: "نشاط المنشأة", parent: "", weight: 10 },
-      { num: 4, desc: "إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", weight: 80 },
-      { num: 5, desc: "عدم دفع الأجر من خلال برنامج حماية الأجور", weight: 30 },
-      { num: 6, desc: "وجود صلة قرابة بين العامل وصاحب العمل", weight: 10 },
-      { num: 7, desc: "عدم تسجيل العامل في منصة العمل عن بعد", weight: 50 },
-      { num: 8, desc: "وجود تبرير من المنشأة لمدة 3 أشهر فأكثر في منصة حماية الأجور", weight: 30 },
-      { num: 9, desc: "عدم تسكين الموظف السعودي على المنشأة التي تم تسجيله عليها", weight: 10 },
-      { num: 10, desc: "توظيف فئات بمهنة لا تتوافق مع قدراتهم", weight: 60 },
-      { num: 11, desc: "وجود سابقة لدى العامل أو المنشأة في التوطين الوهمي", weight: 20 },
-      { num: 12, desc: "عدم وجود موقع للمنشأة أو عدم تحديث البيانات", weight: 50 }
+  <div id="indicatorsList"></div>
+
+  <div class="total-box">
+    <span>النتيجة الإجمالية للمؤشرات:</span>
+    <span class="total-text"><span id="totalPercent">0</span>%</span>
+  </div>
+
+  <button onclick="generateExcel()">تصدير ملف Excel باسم الموظف</button>
+</div>
+
+<script>
+  const indicators = [
+    { num: "1", desc: "عدم وجود عقد عمل موثق", weight: 10 },
+    { num: "2", desc: "عدم وجود تأمين طبي للعامل", weight: 20 },
+    { num: "3", desc: "عدم وجود إجابات صحيحة بشأن موقع وطبيعة العمل", weight: 60 },
+    { num: "4", desc: "إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", weight: 80 },
+    { num: "5", desc: "عدم دفع الأجر من خلال برنامج حماية الأجور", weight: 30 },
+    { num: "6", desc: "وجود صلة قرابة بين العامل وصاحب العمل", weight: 10 },
+    { num: "7", desc: "عدم تسجيل العامل في منصة العمل عن بعد", weight: 50 },
+    { num: "8", desc: "وجود تبرير لعدم صرف الأجر لمدة 3 أشهر فأكثر", weight: 30 },
+    { num: "9", desc: "عدم تسكين الموظف على المنشأة المسجل عليها", weight: 10 },
+    { num: "10", desc: "توظيف فئات لا تتناسب مهنهم مع قدراتهم", weight: 60 },
+    { num: "11", desc: "وجود سابقة توطين وهمي للمنشأة أو العامل", weight: 20 },
+    { num: "12", desc: "عدم وجود موقع للمنشأة أو عدم تحديث بياناتها", weight: 50 }
+  ];
+
+  function render() {
+    document.getElementById('indicatorsList').innerHTML = indicators.map((ind, i) => `
+      <div class="indicator-row">
+        <div class="num">${ind.num}</div>
+        <div class="desc">${ind.desc}</div>
+        <div class="weight">${ind.weight}%</div>
+        <input type="checkbox" id="chk${i}" class="checkbox" data-weight="${ind.weight}" onchange="updateTotal()">
+      </div>
+    `).join('');
+  }
+
+  function updateTotal() {
+    let total = 0;
+    document.querySelectorAll('.checkbox:checked').forEach(cb => total += parseFloat(cb.dataset.weight));
+    document.getElementById('totalPercent').textContent = total;
+  }
+
+  function generateExcel() {
+    const name = document.getElementById('empName').value.trim() || "تقرير_عام";
+    const idNum = document.getElementById('idNumber').value || "غير مسجل";
+    const totalScore = document.getElementById('totalPercent').textContent;
+
+    // بناء مصفوفة البيانات بتنسيق جدولي
+    const ws_data = [
+      ["تقرير نتائج مؤشرات التوطين الوهمي"],
+      [""],
+      ["بيانات الموظف"],
+      ["اسم الموظف:", name, "", "رقم الهوية:", idNum],
+      ["تاريخ الاستخراج:", new Date().toLocaleDateString('ar-SA')],
+      [""],
+      ["م", "المؤشر", "الوزن النسبي", "تم التحقق", "النتيجة"],
     ];
 
-    let total = 0;
+    indicators.forEach((ind, i) => {
+      const isChecked = document.getElementById(`chk${i}`).checked;
+      ws_data.push([
+        ind.num,
+        ind.desc,
+        ind.weight + "%",
+        isChecked ? "نعم" : "لا",
+        isChecked ? ind.weight + "%" : "0%"
+      ]);
+    });
 
-    function renderIndicators() {
-      const list = document.getElementById('indicatorsList');
-      let html = '';
-      indicators.forEach((ind, i) => {
-        const id = `chk${i}`;
-        html += `
-          <div class="indicator-row">
-            <div class="num">${ind.num}</div>
-            <div class="desc">
-              ${ind.parent ? `<strong>${ind.parent}</strong><br>` : ''}
-              ${ind.desc}
-            </div>
-            <div class="weight">${ind.weight}%</div>
-            <input type="checkbox" id="${id}" class="checkbox" data-weight="${ind.weight}" onchange="updateTotal()">
-          </div>
-        `;
-      });
-      list.innerHTML = html;
-    }
+    ws_data.push(["", "الإجمالي النهائي", "", "", totalScore + "%"]);
 
-    function updateTotal() {
-      total = 0;
-      document.querySelectorAll('.checkbox:checked').forEach(cb => {
-        total += parseFloat(cb.dataset.weight);
-      });
-      document.getElementById('totalPercent').textContent = total.toFixed(1);
-    }
+    const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
-    function generateExcel() {
-      const empName = document.getElementById('empName').value.trim() || 'تقرير_بدون_اسم';
-      const idNumber = document.getElementById('idNumber').value || '';
+    // إعدادات عرض الأعمدة ليكون شكل الملف مرتباً
+    ws['!cols'] = [
+      { wch: 5 },  // م
+      { wch: 50 }, // المؤشر
+      { wch: 15 }, // الوزن
+      { wch: 12 }, // تم التحقق
+      { wch: 12 }  // النتيجة
+    ];
 
-      // بناء مصفوفة البيانات للإكسل
-      const data = [
-        ["تقرير المؤشرات والأوزان الاسترشادية"],
-        [""],
-        ["رقم المؤشر", "وصف المؤشر", "الوزن النسبي", "النتيجة", "تم التحقق"],
-      ];
+    // دمج خلية العنوان الرئيسي
+    ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
 
-      indicators.forEach((ind, i) => {
-        const isChecked = document.getElementById(`chk${i}`).checked;
-        data.push([
-          ind.num,
-          ind.parent ? `${ind.parent} - ${ind.desc}` : ind.desc,
-          `${ind.weight}%`,
-          isChecked ? `${ind.weight}%` : "0%",
-          isChecked ? "نعم" : "لا"
-        ]);
-      });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "التقرير");
+    
+    // حفظ الملف باسم الموظف
+    XLSX.writeFile(wb, `${name}.xlsx`);
+  }
 
-      data.push([""]);
-      data.push(["إجمالي النتيجة", "", "", `${total}%`]);
-      data.push([""]);
-      data.push(["اسم الموظف:", empName]);
-      data.push(["رقم الهوية:", idNumber]);
-      data.push(["تاريخ التقرير:", new Date().toLocaleDateString('ar-SA')]);
+  render();
+</script>
 
-      // إنشاء ورقة العمل والمصنف
-      const ws = XLSX.utils.aoa_to_sheet(data);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "التقرير");
-
-      // تحديد اسم الملف بناءً على اسم الموظف
-      const fileName = `${empName}.xlsx`;
-
-      // تصدير وحفظ الملف
-      XLSX.writeFile(wb, fileName);
-    }
-
-    renderIndicators();
-  </script>
 </body>
 </html>
