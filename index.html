@@ -2,29 +2,139 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام تقارير التوطين المتطور 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 20px; direction: rtl; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2, h3 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
-        .section { background: #fdfdfd; padding: 20px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 25px; }
-        .grid-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-        label { font-weight: bold; display: block; margin-bottom: 5px; color: #444; font-size: 0.9em; }
-        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .indicator-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; }
-        .col-desc { flex: 1; padding: 0 10px; }
-        .btn-group { display: flex; gap: 15px; justify-content: center; margin-top: 20px; }
-        .btn { padding: 15px 30px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; color: white; transition: 0.3s; flex: 1; max-width: 250px; }
-        .btn-weights { background: #34495e; }
-        .btn-results { background: #27ae60; }
-        .btn:hover { opacity: 0.8; transform: translateY(-2px); }
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --bg-color: #f4f7f6;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, sans-serif; 
+            background-color: var(--bg-color); 
+            margin: 0; 
+            padding: 10px;
+            direction: rtl; 
+        }
+
+        .container { 
+            max-width: 1000px; 
+            margin: 10px auto; 
+            background: white; 
+            padding: 20px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+        }
+
+        h2, h3 { 
+            color: var(--secondary-color); 
+            border-bottom: 2px solid var(--primary-color); 
+            padding-bottom: 10px; 
+            font-size: 1.2rem;
+        }
+
+        .section { 
+            background: #fdfdfd; 
+            padding: 15px; 
+            border: 1px solid #eee; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+        }
+
+        /* نظام الشبكة المتجاوب للحقول */
+        .grid-inputs { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
+            gap: 15px; 
+        }
+
+        label { 
+            font-weight: bold; 
+            display: block; 
+            margin-bottom: 5px; 
+            color: #555; 
+            font-size: 0.9rem; 
+        }
+
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+            font-size: 1rem;
+        }
+
+        /* تصميم صفوف المؤشرات المتجاوب */
+        .indicator-row { 
+            display: flex; 
+            align-items: center; 
+            padding: 12px; 
+            border-bottom: 1px solid #eee; 
+            gap: 10px;
+        }
+
+        .col-num { width: 30px; font-weight: bold; flex-shrink: 0; }
+        .col-desc { flex-grow: 1; font-size: 0.95rem; line-height: 1.4; }
+        .col-weight { width: 55px; color: var(--danger-color); font-weight: bold; text-align: center; flex-shrink: 0; }
+        .chk-input { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
+
+        .total-footer { 
+            text-align: center; 
+            font-size: 1.4rem; 
+            margin-top: 20px; 
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            font-weight: bold; 
+            color: #856404; 
+        }
+
+        /* مجموعة الأزرار */
+        .btn-group { 
+            display: flex; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+            margin-top: 20px; 
+        }
+
+        .btn { 
+            flex: 1;
+            min-width: 200px;
+            padding: 15px; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            font-weight: bold; 
+            color: white; 
+            transition: 0.3s ease; 
+        }
+
+        .btn-weights { background-color: var(--secondary-color); }
+        .btn-results { background-color: var(--success-color); }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        /* تعديلات خاصة للشاشات الصغيرة جداً */
+        @media (max-width: 480px) {
+            .indicator-row { flex-wrap: wrap; }
+            .col-desc { width: 100%; order: 1; }
+            .col-num { order: 2; }
+            .col-weight { order: 3; }
+            .chk-input { order: 4; margin-right: auto; }
+            .btn { width: 100%; }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>نظام تقارير التوطين - 2026</h2>
+    <h2>نظام تقارير التوطين الذكي</h2>
 
     <div class="section">
         <h3>بيانات المنشأة والموظف</h3>
@@ -37,9 +147,9 @@
     </div>
 
     <div class="section">
-        <h3>جدول الأوزان</h3>
+        <h3>جدول الأوزان الاسترشادية</h3>
         <div id="indicatorsList"></div>
-        <div style="text-align: left; font-size: 1.3em; margin-top: 15px; font-weight: bold; color: #d35400;">
+        <div class="total-footer">
             إجمالي الدرجة: <span id="totalPercent">0</span>%
         </div>
     </div>
@@ -48,7 +158,7 @@
         <h3>النتائج والتوصيات</h3>
         <div class="grid-inputs">
             <div>
-                <label>التوصية</label>
+                <label>التوصية النهائية</label>
                 <select id="recommendation">
                     <option value="علاقة عمل غير صحيحة">علاقة عمل غير صحيحة</option>
                     <option value="علاقة عمل صحيحة">علاقة عمل صحيحة</option>
@@ -65,13 +175,13 @@
         </div>
         <div style="margin-top: 15px;">
             <label>ملاحظات إضافية</label>
-            <textarea id="notes" rows="2"></textarea>
+            <textarea id="notes" rows="3"></textarea>
         </div>
     </div>
 
     <div class="btn-group">
-        <button class="btn btn-weights" onclick="exportWeights()">تصدير ملف الأوزان</button>
-        <button class="btn btn-results" onclick="exportResults()">تصدير ملف النتائج</button>
+        <button class="btn btn-weights" onclick="exportWeights()">تصدير الأوزان (Excel)</button>
+        <button class="btn btn-results" onclick="exportResults()">تصدير النتائج (Excel)</button>
     </div>
 </div>
 
@@ -79,7 +189,7 @@
     const indicators = [
         { n: "1", d: "عدم وجود عقد عمل موثق", w: 10 },
         { n: "2", d: "عدم وجود تأمين طبي للعامل", w: 20 },
-        { n: "3", d: "عدم صحة الإجابات بشأن موقع وطبيعة العمل", w: 60 },
+        { n: "3", d: "عدم صحة الإجابات بشأن موقع وطبيعة العمل ونشاط المنشأة", w: 60 },
         { n: "4", d: "إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", w: 80 },
         { n: "5", d: "عدم دفع الأجر من خلال برنامج حماية الأجور", w: 30 },
         { n: "6", d: "وجود صلة قرابة بين العامل وصاحب العمل", w: 10 },
@@ -87,71 +197,72 @@
         { n: "8", d: "تبرير عدم صرف الأجر لمدة 3 أشهر فأكثر", w: 30 },
         { n: "9", d: "عدم تسكين الموظف على المنشأة المسجل عليها", w: 10 },
         { n: "10", d: "توظيف فئات بمهنة لا تتناسب مع قدراتهم", w: 60 },
-        { n: "11", d: "وجود سابقة توطين وهمي", w: 20 },
+        { n: "11", d: "وجود سابقة توطين وهمي لدى العامل أو المنشأة", w: 20 },
         { n: "12", d: "عدم وجود موقع للمنشأة أو عدم تحديث البيانات", w: 50 }
     ];
 
     function render() {
         document.getElementById('indicatorsList').innerHTML = indicators.map((ind, i) => `
             <div class="indicator-row">
-                <div style="width:30px; font-weight:bold">${ind.n}</div>
+                <div class="col-num">${ind.n}</div>
                 <div class="col-desc">${ind.d}</div>
-                <div style="width:60px; color:red">${ind.w}%</div>
-                <input type="checkbox" class="chk" data-weight="${ind.w}" onchange="updateUI()" style="width:20px; height:20px;">
+                <div class="col-weight">${ind.w}%</div>
+                <input type="checkbox" class="chk-input" data-weight="${ind.w}" onchange="updateUI()">
             </div>
         `).join('');
     }
 
     function updateUI() {
         let total = 0;
-        document.querySelectorAll('.chk:checked').forEach(cb => total += parseInt(cb.dataset.weight));
+        document.querySelectorAll('.chk-input:checked').forEach(cb => total += parseInt(cb.dataset.weight));
         document.getElementById('totalPercent').textContent = total;
         document.getElementById('recommendation').value = (total >= 80) ? "علاقة عمل غير صحيحة" : "علاقة عمل صحيحة";
     }
 
+    // تصدير الأوزان مع سطر المجموع
     function exportWeights() {
         const name = document.getElementById('empName').value || "موظف";
         const total = document.getElementById('totalPercent').textContent + "%";
-        
         let rows = [
-            ["تقرير الأوزان الاسترشادية"],
-            ["الاسم:", name, "التاريخ:", new Date().toLocaleDateString('ar-SA')],
+            ["جدول الأوزان الاسترشادية للمراقب"],
+            ["اسم الموظف:", name, "التاريخ:", new Date().toLocaleDateString('ar-SA')],
             [""],
             ["#", "المؤشر", "الوزن النسبي", "تم التحقق"]
         ];
 
         indicators.forEach((ind, i) => {
-            const checked = document.querySelectorAll('.chk')[i].checked;
+            const checked = document.querySelectorAll('.chk-input')[i].checked;
             rows.push([ind.n, ind.d, ind.w + "%", checked ? "نعم" : "لا"]);
         });
 
-        rows.push(["", "المجموع النهائي", total, ""]);
+        rows.push(["", "إجمالي درجة الأوزان", total, ""]);
 
         const ws = XLSX.utils.aoa_to_sheet(rows);
-        ws['!cols'] = [{wch: 5}, {wch: 50}, {wch: 15}, {wch: 12}];
+        ws['!cols'] = [{wch: 6}, {wch: 60}, {wch: 15}, {wch: 12}];
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "الأوزان");
         XLSX.writeFile(wb, `${name}_الأوزان.xlsx`);
     }
 
+    // تصدير النتائج في سطر واحد
     function exportResults() {
         const name = document.getElementById('empName').value || "بدون_اسم";
-        const data = [[
-            "اسم الموظف", "رقم الهوية", "السجل التجاري", "رقم المنشأة", 
-            "درجة الأوزان", "التوصية النهائية", "مبررات إلغاء المدة", "الملاحظات"
-        ], [
+        const totalScore = document.getElementById('totalPercent').textContent + "%";
+        
+        const header = ["اسم الموظف", "رقم الهوية", "السجل التجاري", "رقم المنشأة", "درجة الأوزان", "التوصية", "المبررات", "الملاحظات"];
+        const values = [
             name,
             document.getElementById('idNumber').value,
             document.getElementById('crNumber').value,
             document.getElementById('hrsdNumber').value,
-            document.getElementById('totalPercent').textContent + "%",
+            totalScore,
             document.getElementById('recommendation').value,
             document.getElementById('justification').value,
             document.getElementById('notes').value
-        ]];
+        ];
 
-        const ws = XLSX.utils.aoa_to_sheet(data);
-        ws['!cols'] = Array(8).fill({wch: 22}); // عرض متساوي لجميع الأعمدة
+        const ws = XLSX.utils.aoa_to_sheet([header, values]);
+        ws['!cols'] = Array(8).fill({wch: 25});
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "النتائج");
         XLSX.writeFile(wb, `${name}_النتائج.xlsx`);
