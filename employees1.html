@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>توليد تقرير التوطين الوهمي</title>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.full.min.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 30px; background: #f8f9fa; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #2c3e50; }
+    label { display: inline-block; width: 120px; font-weight: bold; margin-top: 10px; }
+    input[type="text"], input[type="number"] { width: 250px; padding: 6px; margin-top: 5px; }
+    .indicators { margin-top: 20px; }
+    .indicator-row {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .num { width: 40px; font-weight: bold; text-align: center; }
+    .desc { flex: 1; }
+    .weight { width: 80px; text-align: center; color: #e74c3c; font-weight: bold; }
+    .checkbox { margin-right: 10px; }
+    .total { font-size: 18px; font-weight: bold; color: #27ae60; margin-top: 20px; text-align: left; }
+    button {
+      background: #3498db; color: white; border: none; padding: 12px 25px;
+      font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;
+      display: block; margin: 30px auto 10px;
+    }
+    button:hover { background: #2980b9; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>نموذج تقرير التوطين الوهمي 2025</h2>
+
+    <label>اسم الموظف:</label>
+    <input type="text" id="empName" placeholder="أدخل الاسم">
+
+    <label>رقم الهوية:</label>
+    <input type="text" id="idNumber" placeholder="أدخل رقم الهوية">
+
+    <div class="indicators">
+      <h3>المؤشرات (اختر ما ينطبق)</h3>
+      <!-- سيتم ملؤها ديناميكيًا -->
+      <div id="indicatorsList"></div>
+      <div class="total">المجموع: <span id="totalPercent">0</span>%</div>
+    </div>
+
+    <button onclick="generateExcel()">توليد وتنزيل ملف Excel</button>
+  </div>
+
+  <script>
+    // تعريف المؤشرات كما في الملف
+    const indicators = [
+      { num: 1, desc: "عدم وجود عقد عمل موثق", weight: 10 },
+      { num: 2, desc: "عدم وجود تأمين طبي للعامل", weight: 20 },
+      { num: "3a", desc: "موقع العمل", parent: "عدم وجود إجابات، أو إجابات غير صحيحة، أو مبهمة عند سؤال العامل محل الاشتباه بشأن موقع العمل وطبيعة عمله ونشاط المنشأة", weight: 20 },
+      { num: "3b", desc: "طبيعة عمله", parent: "", weight: 30 },
+      { num: "3c", desc: "نشاط المنشأة", parent: "", weight: 10 },
+      { num: 4, desc: "إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", weight: 80 },
+      { num: 5, desc: "عدم دفع الأجر من خلال برنامج حماية الأجور ويشمل التحويلات البنكية، وأيضاً مدى صحة مسيرات الرواتب أو سندات الصرف (في حال عدم وجود حوالات بنكية)", weight: 30 },
+      { num: 6, desc: "وجود صلة قرابة بين العامل وصاحب العمل", weight: 10 },
+      { num: 7, desc: "عدم تسجيل العامل في منصة العمل عن بعد في حال ادعى العامل أو صاحب العمل بأنه يعمل عن بعد", weight: 50 },
+      { num: 8, desc: "وجود تبرير من المنشأة لمدة 3 أشهر فأكثر في منصة حماية الأجور على عدم صرف أجر العامل وعدم اعتراض العامل على التبرير", weight: 30 },
+      { num: 9, desc: "عدم تسكين الموظف السعودي على المنشأة التي تم تسجيله عليها", weight: 10 },
+      { num: 10, desc: "توظيف نساء أو شخص كبير في السن، أو ذوي الإعاقة بمهنة لا تتوافق مع قدراته على أدائها", weight: 60 },
+      { num: 11, desc: "وجود سابقة لدى العامل أو المنشأة في التوطين الوهمي", weight: 20 },
+      { num: 12, desc: "عدم وجود موقع للمنشأة أو عدم تحديث البيانات", weight: 50 }
+    ];
+
+    let total = 0;
+
+    function renderIndicators() {
+      const list = document.getElementById('indicatorsList');
+      let html = '';
+      indicators.forEach((ind, i) => {
+        const id = `chk${i}`;
+        const displayNum = typeof ind.num === 'number' ? `&nbsp;&nbsp;${ind.num}&nbsp;&nbsp;` : ind.num;
+        html += `
+          <div class="indicator-row">
+            <div class="num">${displayNum}</div>
+            <div class="desc">
+              ${ind.parent ? `<strong>${ind.parent}</strong><br>` : ''}
+              ${ind.desc}
+            </div>
+            <div class="weight">${ind.weight}%</div>
+            <input type="checkbox" id="${id}" class="checkbox" data-weight="${ind.weight}" onchange="updateTotal()">
+          </div>
+        `;
+      });
+      list.innerHTML = html;
+    }
+
+    function updateTotal() {
+      total = 0;
+      document.querySelectorAll('.checkbox:checked').forEach(cb => {
+        total += parseFloat(cb.dataset.weight);
+      });
+      document.getElementById('totalPercent').textContent = total.toFixed(1);
+    }
+
+    function generateExcel() {
+      const empName = document.getElementById('empName').value || '';
+      const idNumber = document.getElementById('idNumber').value || '';
+
+      // بناء البيانات كما في الجدول
+      const data = [
+        ["جدول المؤشرات والأوزان الاسترشادية للمراقب"],
+        [""],
+        ["#", "المؤشر", "الوزن النسبي", "", "تم التحقق", ""],
+        ["", "", "", "", "", ""]
+      ];
+
+      let row = 4; // بدء من الصف 4 (0-based في المصفوفة = السطر الخامس فعليًا)
+      indicators.forEach((ind, i) => {
+        const isChecked = document.getElementById(`chk${i}`).checked;
+        const verified = isChecked ? true : false;
+        const numCell = ind.num;
+        let descCell = ind.desc;
+        if (ind.parent) {
+          descCell = ind.parent; // للمؤشر 3: نضع الوصف الرئيسي في السطر الأول فقط
+          // في الأسطر التالية، نضع "" أو نضع الفرعي — لكن في الملف الأصلي كُرر نفس السطر
+          // لذا سنكرر الوصف الرئيسي كما في الملف المرفق
+        }
+        data.push([
+          numCell,
+          descCell,
+          `${ind.weight}%`,
+          `${ind.weight}%`,
+          verified,
+          ""
+        ]);
+        row++;
+      });
+
+      // إضافة سطرين فارغين ثم "المجموع"
+      data.push(["", "", "", "", "", ""]);
+      data.push(["المجموع", "المجموع", "المجموع", "", `${total}%`, ""]);
+      data.push(["", "", "", "", "", ""]);
+      data.push(["", "اسم الموظف", empName, "", "", ""]);
+      data.push(["", "رقم الهوية", idNumber, "", "", ""]);
+
+      // تحويل إلى ورقة عمل
+      const ws = XLSX.utils.aoa_to_sheet(data);
+
+      // تنسيق عمود "تم التحقق" كـ منطقي (TRUE/FALSE بدل 1/0)
+      // SheetJS يتعامل مع true/false تلقائيًا كـ منطقي في Excel
+
+      // إنشاء المصنف
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "ورقة1");
+
+      // تنزيل الملف
+      XLSX.writeFile(wb, "تقرير_التوطين_الوهمي_2025.xlsx");
+    }
+
+    // تشغيل أولي
+    renderIndicators();
+    updateTotal();
+  </script>
+</body>
+</html>
