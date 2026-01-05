@@ -2,32 +2,149 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>توليد تقرير التوطين الوهمي</title>
-  <!-- رابط CSS — تأكد أن الملف اسمه: style.css (صغير كله) -->
-  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #f5f7fa; margin: 20px; }
+    .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #1a3a5f; }
+    .form-group { margin: 15px 0; }
+    label { display: inline-block; width: 120px; font-weight: bold; }
+    input[type="text"] { width: 280px; padding: 6px; }
+    .indicators h3 { margin-top: 30px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; border: 1px solid #ddd; text-align: right; }
+    th { background: #f8f9fa; }
+    .total-row td { font-weight: bold; color: #27ae60; }
+    button {
+      display: block; margin: 30px auto; padding: 12px 30px;
+      background: #2ecc71; color: white; border: none; font-size: 16px;
+      border-radius: 6px; cursor: pointer;
+    }
+    button:hover { background: #27ae60; }
+  </style>
 </head>
 <body>
   <div class="container">
     <h2>نموذج تقرير التوطين الوهمي 2025</h2>
 
-    <label>اسم الموظف:</label>
-    <input type="text" id="empName" placeholder="أدخل الاسم">
+    <div class="form-group">
+      <label>اسم الموظف:</label>
+      <input type="text" id="empName">
+    </div>
 
-    <label>رقم الهوية:</label>
-    <input type="text" id="idNumber" placeholder="أدخل رقم الهوية">
+    <div class="form-group">
+      <label>رقم الهوية:</label>
+      <input type="text" id="idNumber">
+    </div>
 
     <div class="indicators">
-      <h3>اختر المؤشرات التي تنطبق</h3>
-      <div id="indicatorsList"></div>
-      <div class="total">المجموع: <span id="totalPercent">0</span>%</div>
+      <h3>اختر المؤشرات المُطبَّقة (✓)</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:5%">#</th>
+            <th>المؤشر</th>
+            <th style="width:12%">الوزن</th>
+            <th style="width:8%">تم التحقق</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>عدم وجود عقد عمل موثق</td>
+            <td>10%</td>
+            <td><input type="checkbox" class="chk" data-weight="10"></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>عدم وجود تأمين طبي للعامل</td>
+            <td>20%</td>
+            <td><input type="checkbox" class="chk" data-weight="20"></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>عدم وجود إجابات، او إجابات غير صحيحه، او مبهمة عند سؤال العامل محل الاشتباه بشأن موقع العمل وطبيعة عمله ونشاط المنشأة 60%<br><strong>موقع العمل (20%)</strong></td>
+            <td>20%</td>
+            <td><input type="checkbox" class="chk" data-weight="20"></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>عدم وجود إجابات، او إجابات غير صحيحه، او مبهمة عند سؤال العامل محل الاشتباه بشأن موقع العمل وطبيعة عمله ونشاط المنشأة 60%<br><strong>طبيعة عمله (30%)</strong></td>
+            <td>30%</td>
+            <td><input type="checkbox" class="chk" data-weight="30"></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>عدم وجود إجابات، او إجابات غير صحيحه، او مبهمة عند سؤال العامل محل الاشتباه بشأن موقع العمل وطبيعة عمله ونشاط المنشأة 60%<br><strong>نشاط المنشأة (10%)</strong></td>
+            <td>10%</td>
+            <td><input type="checkbox" class="chk" data-weight="10"></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>إقرار العامل او المنشأة بعدم وجود علاقة عمل فعليه</td>
+            <td>80%</td>
+            <td><input type="checkbox" class="chk" data-weight="80"></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td>عدم دفع الأجر من خلال برنامج حماية الأجور ويشمل التحويلات البنكية، وأيضا مدى صحة مسيرات الرواتب او سندات الصرف (في حال عدم وجود حوالات بنكية)</td>
+            <td>30%</td>
+            <td><input type="checkbox" class="chk" data-weight="30"></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td>وجود صلة قرابة بين العامل وصاحب العمل</td>
+            <td>10%</td>
+            <td><input type="checkbox" class="chk" data-weight="10"></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td>عدم تسجيل العامل في منصة العمل عن بعد في حال ادعى العامل او صاحب العمل بأنه يعمل عن بعد</td>
+            <td>50%</td>
+            <td><input type="checkbox" class="chk" data-weight="50"></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td>وجود تبرير من المنشأة لمدة 3 أشهر فأكثر في منصة حماية الأجور على عدم صرف اجر العامل وعدم اعتراض العامل على التبرير.</td>
+            <td>30%</td>
+            <td><input type="checkbox" class="chk" data-weight="30"></td>
+          </tr>
+          <tr>
+            <td>9</td>
+            <td>عدم تسكين الموظف السعودي على المنشأة التي تم تسجيله عليها</td>
+            <td>10%</td>
+            <td><input type="checkbox" class="chk" data-weight="10"></td>
+          </tr>
+          <tr>
+            <td>10</td>
+            <td>توظيف نساء او شخص كبير في السن ، او ذوي الإعاقة بمهنة لا تتوافق مع قدراته على أدائها</td>
+            <td>60%</td>
+            <td><input type="checkbox" class="chk" data-weight="60"></td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td>وجود سابقة لدى العامل او المنشأة في التوطين الوهمي</td>
+            <td>20%</td>
+            <td><input type="checkbox" class="chk" data-weight="20"></td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td>عدم وجود موقع للمنشأة او عدم تحديث البيانات</td>
+            <td>50%</td>
+            <td><input type="checkbox" class="chk" data-weight="50"></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="2">المجموع</td>
+            <td id="total">0%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
 
     <button id="generateBtn">📥 توليد وتنزيل Excel</button>
-    <div class="note">✓ يعمل دون إنترنت — لا يحتاج اتصال</div>
   </div>
 
-  <!-- ربط الجافا سكريبت في نهاية <body> -->
   <script src="script.js"></script>
 </body>
 </html>
