@@ -3,186 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام توليد الملفات   2026</title>
+    <title>نظام تقارير التوطين 2026</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2c3e50;
-            --success-color: #27ae60;
-            --danger-color: #e74c3c;
-            --bg-color: #f4f7f6;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            background-color: var(--bg-color); 
-            margin: 0; 
-            padding: 10px;
-            direction: rtl; 
-        }
-
-        .container { 
-            max-width: 1000px; 
-            margin: 10px auto; 
-            background: white; 
-            padding: 20px; 
-            border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-        }
-
-        h2, h3 { 
-            color: var(--secondary-color); 
-            border-bottom: 2px solid var(--primary-color); 
-            padding-bottom: 10px; 
-            font-size: 1.2rem;
-        }
-
-        .section { 
-            background: #fdfdfd; 
-            padding: 15px; 
-            border: 1px solid #eee; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
-        }
-
-        /* نظام الشبكة المتجاوب للحقول */
-        .grid-inputs { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 15px; 
-        }
-
-        label { 
-            font-weight: bold; 
-            display: block; 
-            margin-bottom: 5px; 
-            color: #555; 
-            font-size: 0.9rem; 
-        }
-
-        input, select, textarea { 
-            width: 100%; 
-            padding: 12px; 
-            border: 1px solid #ccc; 
-            border-radius: 6px; 
-            box-sizing: border-box; 
-            font-size: 1rem;
-        }
-
-        /* تصميم صفوف المؤشرات المتجاوب */
-        .indicator-row { 
-            display: flex; 
-            align-items: center; 
-            padding: 12px; 
-            border-bottom: 1px solid #eee; 
-            gap: 10px;
-        }
-
-        .col-num { width: 30px; font-weight: bold; flex-shrink: 0; }
-        .col-desc { flex-grow: 1; font-size: 0.95rem; line-height: 1.4; }
-        .col-weight { width: 55px; color: var(--danger-color); font-weight: bold; text-align: center; flex-shrink: 0; }
-        .chk-input { width: 22px; height: 22px; cursor: pointer; flex-shrink: 0; }
-
-        .total-footer { 
-            text-align: center; 
-            font-size: 1.4rem; 
-            margin-top: 20px; 
-            padding: 15px;
-            background: #fff3cd;
-            border-radius: 8px;
-            font-weight: bold; 
-            color: #856404; 
-        }
-
-        /* مجموعة الأزرار */
-        .btn-group { 
-            display: flex; 
-            gap: 10px; 
-            flex-wrap: wrap; 
-            margin-top: 20px; 
-        }
-
-        .btn { 
-            flex: 1;
-            min-width: 200px;
-            padding: 15px; 
-            border: none; 
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-size: 1rem; 
-            font-weight: bold; 
-            color: white; 
-            transition: 0.3s ease; 
-        }
-
-        .btn-weights { background-color: var(--secondary-color); }
-        .btn-results { background-color: var(--success-color); }
-        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
-
-        /* تعديلات خاصة للشاشات الصغيرة جداً */
-        @media (max-width: 480px) {
-            .indicator-row { flex-wrap: wrap; }
-            .col-desc { width: 100%; order: 1; }
-            .col-num { order: 2; }
-            .col-weight { order: 3; }
-            .chk-input { order: 4; margin-right: auto; }
-            .btn { width: 100%; }
-        }
+        :root { --primary: #1a73e8; --secondary: #455a64; --success: #2e7d32; --danger: #d32f2f; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; direction: rtl; }
+        
+        /* شاشة الدخول */
+        #loginOverlay { position: fixed; top:0; left:0; width:100%; height:100%; background:white; display:flex; align-items:center; justify-content:center; z-index:1000; }
+        .login-card { width: 90%; max-width: 380px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; border: 1px solid #eee; }
+        
+        #mainContent { display: none; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .section { border: 1px solid #e0e0e0; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 0.85rem; color: #555; }
+        input, select, textarea { width: 100%; padding: 11px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .indicator-row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; gap: 10px; }
+        .col-d { flex: 1; font-size: 0.9rem; }
+        .total-box { background: #e8f0fe; padding: 20px; border-radius: 8px; text-align: center; font-size: 1.4rem; font-weight: bold; color: var(--primary); }
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 25px; }
+        .btn { flex: 1; min-width: 200px; padding: 16px; border: none; border-radius: 8px; cursor: pointer; color: white; font-weight: bold; }
+        .btn-w { background: var(--secondary); }
+        .btn-r { background: var(--success); }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>نظام توليد الملفات  </h2>
-
-    <div class="section">
-        <h3>بيانات المنشأة والموظف</h3>
-        <div class="grid-inputs">
-            <div><label>اسم الموظف</label><input type="text" id="empName"></div>
-            <div><label>رقم الهوية</label><input type="text" id="idNumber"></div>
-            <div><label>رقم السجل التجاري</label><input type="text" id="crNumber"></div>
-            <div><label>رقم المنشأة (HRSD)</label><input type="text" id="hrsdNumber"></div>
-        </div>
+<div id="loginOverlay">
+    <div class="login-card">
+        <h2 style="color: var(--primary);">دخول النظام الآمن</h2>
+        <input type="text" id="user" placeholder="اسم المستخدم">
+        <input type="password" id="pass" placeholder="كلمة المرور">
+        <button onclick="login()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; cursor:pointer; margin-top:10px; font-weight:bold;">دخول</button>
     </div>
+</div>
 
-    <div class="section">
-        <h3>جدول الأوزان الاسترشادية</h3>
-        <div id="indicatorsList"></div>
-        <div class="total-footer">
-            إجمالي الدرجة: <span id="totalPercent">0</span>%
+<div id="mainContent">
+    <div class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 2px solid var(--primary); padding-bottom:10px;">
+            <h2 style="margin:0">نظام تقارير التوطين الوهمي 2026</h2>
+            <button onclick="logout()" style="background:#f44336; color:white; border:none; padding:8px 18px; border-radius:6px; cursor:pointer;">خروج</button>
         </div>
-    </div>
 
-    <div class="section">
-        <h3>النتائج والتوصيات</h3>
-        <div class="grid-inputs">
-            <div>
-                <label>التوصية النهائية</label>
-                <select id="recommendation">
-                    <option value="علاقة عمل غير صحيحة">علاقة عمل غير صحيحة</option>
-                    <option value="علاقة عمل صحيحة">علاقة عمل صحيحة</option>
-                </select>
-            </div>
-            <div>
-                <label>مبررات إلغاء المدة</label>
-                <select id="justification">
-                    <option value="عدم تجاوب المنشأة">عدم تجاوب المنشأة</option>
-                    <option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option>
-                    <option value="إقرار المنشأة / المشترك بعدم وجود علاقة عمل">إقرار المنشأة / المشترك بعدم وجود علاقة عمل</option>
-                     <option value="علاقة صحيحة و لايوجد مبررة">علاقة صحيحة و لايوجد مبرر</option>
-                </select>
+        <div class="section">
+            <h3>بيانات الحالة</h3>
+            <div class="grid">
+                <div><label>اسم العامل</label><input type="text" id="empName"></div>
+                <div><label>رقم هوية العامل</label><input type="text" id="empId"></div>
+                <div><label>رقم السجل التجاري</label><input type="text" id="crNum"></div>
+                <div><label>رقم المنشأة (700)</label><input type="text" id="hrsdNum"></div>
             </div>
         </div>
-        <div style="margin-top: 15px;">
-            <label>ملاحظات إضافية</label>
-            <textarea id="notes" rows="3"></textarea>
-        </div>
-    </div>
 
-    <div class="btn-group">
-        <button class="btn btn-weights" onclick="exportWeights()">تصدير الأوزان (Excel)</button>
-        <button class="btn btn-results" onclick="exportResults()">تصدير النتائج (Excel)</button>
+        <div class="section">
+            <h3>جدول المعايير</h3>
+            <div id="list"></div>
+            <div class="total-box">إجمالي الدرجة: <span id="total">0</span>%</div>
+        </div>
+
+        <div class="section">
+            <h3>النتائج والتوصية</h3>
+            <div class="grid">
+                <div>
+                    <label>التوصية</label>
+                    <select id="recommendation" onchange="autoUpdateJustification()">
+                        <option value="عدم صحة علاقة العمل">عدم صحة علاقة العمل</option>
+                        <option value="صحة علاقة العمل">صحة علاقة العمل</option>
+                    </select>
+                </div>
+                <div>
+                    <label>مبرر التوصية بإلغاء المدة</label>
+                    <select id="justification">
+                        <option value="العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة">العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة</option>
+                        <option value="عدم تجاوب المنشأة خلال المهلة النظامية">عدم تجاوب المنشأة خلال المهلة النظامية</option>
+                        <option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option>
+                        <option value="إقرار المنشأة/المشترك بعدم وجود علاقة العمل">إقرار المنشأة/المشترك بعدم وجود علاقة العمل</option>
+                    </select>
+                </div>
+            </div>
+            <textarea id="notes" rows="2" style="margin-top:15px" placeholder="الملاحظات..."></textarea>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-w" onclick="exportWeights()">تصدير الأوزان</button>
+            <button class="btn btn-r" onclick="exportResults()">تصدير النتائج</button>
+        </div>
     </div>
 </div>
 
@@ -190,88 +96,97 @@
     const indicators = [
         { n: "1", d: "عدم وجود عقد عمل موثق", w: 10 },
         { n: "2", d: "عدم وجود تأمين طبي للعامل", w: 20 },
-        { n: "3", d: "عدم صحة الإجابات بشأن موقع وطبيعة العمل ونشاط المنشأة", w: 60 },
+        { n: "3-أ", d: "موقع العمل (إجابات غير صحيحة/مبهمة)", w: 20 },
+        { n: "3-ب", d: "طبيعة عمله (إجابات غير صحيحة/مبهمة)", w: 30 },
+        { n: "3-ج", d: "نشاط المنشأة (إجابات غير صحيحة/مبهمة)", w: 10 },
         { n: "4", d: "إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", w: 80 },
-        { n: "5", d: "عدم دفع الأجر من خلال برنامج حماية الأجور", w: 30 },
+        { n: "5", d: "عدم دفع الأجر عبر حماية الأجور/البنك", w: 30 },
         { n: "6", d: "وجود صلة قرابة بين العامل وصاحب العمل", w: 10 },
         { n: "7", d: "عدم تسجيل العامل في منصة العمل عن بعد", w: 50 },
         { n: "8", d: "تبرير عدم صرف الأجر لمدة 3 أشهر فأكثر", w: 30 },
         { n: "9", d: "عدم تسكين الموظف على المنشأة المسجل عليها", w: 10 },
         { n: "10", d: "توظيف فئات بمهنة لا تتناسب مع قدراتهم", w: 60 },
-        { n: "11", d: "وجود سابقة توطين وهمي لدى العامل أو المنشأة", w: 20 },
+        { n: "11", d: "وجود سابقة توطين وهمي للمنشأة أو العامل", w: 20 },
         { n: "12", d: "عدم وجود موقع للمنشأة أو عدم تحديث البيانات", w: 50 }
     ];
 
+    function login() {
+        if(document.getElementById('user').value === "admin" && document.getElementById('pass').value === "194511") {
+            sessionStorage.setItem('auth', 'true');
+            location.reload();
+        } else { alert("كلمة المرور غير صحيحة"); }
+    }
+
+    function logout() { sessionStorage.clear(); location.reload(); }
+
+    window.onload = () => {
+        if(sessionStorage.getItem('auth') === 'true') {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+            render();
+        }
+    };
+
     function render() {
-        document.getElementById('indicatorsList').innerHTML = indicators.map((ind, i) => `
+        document.getElementById('list').innerHTML = indicators.map(x => `
             <div class="indicator-row">
-                <div class="col-num">${ind.n}</div>
-                <div class="col-desc">${ind.d}</div>
-                <div class="col-weight">${ind.w}%</div>
-                <input type="checkbox" class="chk-input" data-weight="${ind.w}" onchange="updateUI()">
-            </div>
-        `).join('');
+                <div style="width:35px; font-weight:bold;">${x.n}</div>
+                <div class="col-d">${x.d}</div>
+                <div style="width:50px; font-weight:bold; color:red;">${x.w}%</div>
+                <input type="checkbox" class="chk" data-w="${x.w}" onchange="update()">
+            </div>`).join('');
     }
 
-    function updateUI() {
-        let total = 0;
-        document.querySelectorAll('.chk-input:checked').forEach(cb => total += parseInt(cb.dataset.weight));
-        document.getElementById('totalPercent').textContent = total;
-        document.getElementById('recommendation').value = (total >= 80) ? "علاقة عمل غير صحيحة" : "علاقة عمل صحيحة";
+    function update() {
+        let sum = 0;
+        document.querySelectorAll('.chk:checked').forEach(c => sum += parseInt(c.dataset.w));
+        document.getElementById('total').innerText = sum;
+        
+        const rec = document.getElementById('recommendation');
+        const just = document.getElementById('justification');
+        
+        if (sum >= 80) {
+            rec.value = "عدم صحة علاقة العمل";
+        } else {
+            rec.value = "صحة علاقة العمل";
+            just.value = "العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة";
+        }
     }
 
-    // تصدير الأوزان مع سطر المجموع
+    function autoUpdateJustification() {
+        if(document.getElementById('recommendation').value === "صحة علاقة العمل") {
+            document.getElementById('justification').value = "العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة";
+        }
+    }
+
     function exportWeights() {
-        const name = document.getElementById('empName').value || "موظف";
-        const total = document.getElementById('totalPercent').textContent + "%";
-        let rows = [
-            ["جدول الأوزان الاسترشادية للمراقب"],
-            ["اسم الموظف:", name, "التاريخ:", new Date().toLocaleDateString('ar-SA')],
-            [""],
-            ["#", "المؤشر", "الوزن النسبي", "تم التحقق"]
-        ];
-
-        indicators.forEach((ind, i) => {
-            const checked = document.querySelectorAll('.chk-input')[i].checked;
-            rows.push([ind.n, ind.d, ind.w + "%", checked ? "نعم" : "لا"]);
-        });
-
-        rows.push(["", "إجمالي درجة الأوزان", total, ""]);
-
+        const name = document.getElementById('empName').value || "عامل";
+        let rows = [["تقرير الأوزان"], ["الموظف:", name, "التاريخ:", new Date().toLocaleDateString('ar-SA')], [""], ["#", "المؤشر", "الوزن", "التحقق"]];
+        indicators.forEach((x, i) => rows.push([x.n, x.d, x.w + "%", document.querySelectorAll('.chk')[i].checked ? "نعم" : "لا"]));
+        rows.push(["", "المجموع", document.getElementById('total').innerText + "%", ""]);
         const ws = XLSX.utils.aoa_to_sheet(rows);
-        ws['!cols'] = [{wch: 6}, {wch: 60}, {wch: 15}, {wch: 12}];
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "الأوزان");
+        ws['!cols'] = [{wch:6}, {wch:60}, {wch:15}, {wch:12}];
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Weights");
         XLSX.writeFile(wb, `${name}_الأوزان.xlsx`);
     }
 
-    // تصدير النتائج في سطر واحد
     function exportResults() {
-        const name = document.getElementById('empName').value || "بدون_اسم";
-        const totalScore = document.getElementById('totalPercent').textContent + "%";
-        
-        const header = ["اسم الموظف", "رقم الهوية", "السجل التجاري", "رقم المنشأة", "درجة الأوزان", "التوصية", "المبررات", "الملاحظات"];
+        const name = document.getElementById('empName').value || "عامل";
+        const headers = ["رقم هوية العامل", "رقم السجل التجاري", "رقم المنشأة (HRSD)", "درجة الأوزان", "التوصية", "الملاحظات", "مبرر التوصية بإلغاء المدة"];
         const values = [
-            name,
-            document.getElementById('idNumber').value,
-            document.getElementById('crNumber').value,
-            document.getElementById('hrsdNumber').value,
-            totalScore,
+            document.getElementById('empId').value,
+            document.getElementById('crNum').value,
+            document.getElementById('hrsdNum').value,
+            document.getElementById('total').innerText + "%",
             document.getElementById('recommendation').value,
-            document.getElementById('justification').value,
-            document.getElementById('notes').value
+            document.getElementById('notes').value,
+            document.getElementById('justification').value
         ];
-
-        const ws = XLSX.utils.aoa_to_sheet([header, values]);
-        ws['!cols'] = Array(8).fill({wch: 25});
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "النتائج");
+        const ws = XLSX.utils.aoa_to_sheet([headers, values]);
+        ws['!cols'] = Array(7).fill({wch: 28});
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Results");
         XLSX.writeFile(wb, `${name}_النتائج.xlsx`);
     }
-
-    render();
 </script>
 </body>
 </html>
-
-
