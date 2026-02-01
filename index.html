@@ -3,88 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام تقييم علاقة العمل - 2025</title>
+    <title>نظام تقييم علاقة العمل - الإصدار المعتمد</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --main: #1a73e8; --bg: #f8f9fa; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; direction: rtl; }
-        #lockScreen { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 350px; border-top: 5px solid var(--main); }
-        #mainContent { display: none; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .section { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
-        input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .row { display: flex; align-items: center; padding: 8px 12px; border-bottom: 1px solid #eee; gap: 10px; }
-        .total-box { background: #e8f0fe; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.4rem; font-weight: bold; color: var(--main); margin: 15px 0; border: 2px solid #b6d4fe; }
-        .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; color: white; transition: 0.3s; }
-        .btn-green { background: #2e7d32; }
-        .btn-blue { background: var(--main); }
+        :root { --primary: #1a73e8; --success: #2e7d32; --bg: #f8f9fa; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 20px; direction: rtl; }
+        #lockScreen { position: fixed; inset: 0; background: #fff; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .login-card { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; width: 380px; border-top: 6px solid var(--primary); }
+        #mainContent { display: none; max-width: 1000px; margin: auto; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .section { border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: #fff; }
+        h3 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        input, select, textarea { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        .row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #f1f1f1; gap: 15px; transition: background 0.2s; }
+        .row:hover { background: #f9f9f9; }
+        .weight-badge { background: #fee; color: #d32f2f; padding: 4px 8px; border-radius: 5px; font-weight: bold; min-width: 45px; text-align: center; }
+        .total-panel { background: #e8f0fe; padding: 20px; border-radius: 10px; text-align: center; font-size: 1.6rem; font-weight: bold; color: var(--primary); margin: 20px 0; border: 2px solid #b6d4fe; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; margin-top: 10px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-danger { background: #d32f2f; color: white; width: auto; padding: 8px 20px; }
     </style>
 </head>
 <body>
 
 <div id="lockScreen">
-    <div class="card">
-        <h2>نظام توليد التقارير</h2>
-        <input type="password" id="pass" placeholder="أدخل الرمز (199022)" style="text-align: center; font-size: 1.2rem;">
-        <button onclick="check()" class="btn btn-blue">فتح النظام</button>
-        <p id="err" style="color: red; display: none; margin-top: 10px;">خطأ في الرمز!</p>
+    <div class="login-card">
+        <h2 style="margin-bottom: 20px;">نظام التقييم الميداني</h2>
+        <input type="password" id="pass" placeholder="أدخل رمز الدخول (199022)" style="text-align: center;">
+        <button onclick="unlock()" class="btn btn-primary">دخول للنظام</button>
+        <p id="err" style="color: red; display: none; margin-top: 15px;">الرمز غير صحيح، يرجى المحاولة مرة أخرى</p>
     </div>
 </div>
 
 <div id="mainContent">
     <div class="container">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); padding-bottom: 10px; margin-bottom: 20px;">
-            <h2 style="margin: 0;">جدول المؤشرات والأوزان الاسترشادية</h2>
-            <button onclick="location.reload()" style="background: #d32f2f; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer;">خروج</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2 style="margin: 0; color: #333;">نموذج المؤشرات والأوزان الاسترشادية</h2>
+            <button onclick="location.reload()" class="btn-danger">تسجيل خروج</button>
         </div>
 
         <div class="section">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <h3>بيانات الحالة</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                 <input type="text" id="empName" placeholder="اسم العامل">
-                <input type="text" id="empId" placeholder="رقم الهوية">
+                <input type="text" id="empId" placeholder="رقم الهوية / الإقامة">
                 <input type="text" id="crNum" placeholder="رقم السجل التجاري">
                 <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
             </div>
         </div>
 
         <div class="section">
-            <div id="list"></div>
-            <div class="total-box">إجمالي مؤشر الاشتباه: <span id="total">0</span>%</div>
+            <h3>جدول المعايير (15 مؤشر)</h3>
+            <div id="indicatorsList"></div>
+            <div class="total-panel">إجمالي نسبة الاشتباه المكتشفة: <span id="totalDisplay">0</span>%</div>
         </div>
 
         <div class="section">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <select id="rec" onchange="sync()"><option value="صحة علاقة العمل">صحة علاقة العمل</option><option value="عدم صحة علاقة العمل">عدم صحة علاقة العمل</option></select>
-                <select id="just"><option value="العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة">العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة</option><option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option><option value="إقرار المنشأة/المشترك بعدم وجود علاقة العمل">إقرار المنشأة/المشترك بعدم وجود علاقة العمل</option></select>
+            <h3>التوصية النهائية بناءً على المعطيات</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <select id="recommendation" onchange="handleSync()"><option value="صحة علاقة العمل">صحة علاقة العمل</option><option value="عدم صحة علاقة العمل">عدم صحة علاقة العمل</option></select>
+                <select id="justification"><option value="العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة">العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة</option><option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option><option value="إقرار المنشأة/المشترك بعدم وجود علاقة العمل">إقرار المنشأة/المشترك بعدم وجود علاقة العمل</option><option value="عدم تجاوب المنشأة خلال المهلة النظامية">عدم تجاوب المنشأة خلال المهلة النظامية</option></select>
             </div>
-            <textarea id="notes" rows="2" style="margin-top: 10px;" placeholder="ملاحظات إضافية..."></textarea>
+            <textarea id="extraNotes" rows="3" style="margin-top: 15px;" placeholder="أي ملاحظات إضافية للمراقب الميداني..."></textarea>
         </div>
 
-        <button onclick="exportExcel()" class="btn btn-green">تصدير التقرير النهائي (Excel) RTL</button>
+        <button onclick="generateExcel()" class="btn btn-success">تصدير التقرير النهائي (Excel) - تنسيق RTL</button>
     </div>
 </div>
 
 <script>
-    // التأكد من أن الرمز صحيح لفتح النظام
-    function check() {
-        const passwordInput = document.getElementById('pass').value;
-        if(passwordInput === "199022") {
+    const passwordKey = "199022";
+    const criteria = [
+        {id:1, text:"عدم وجود عقد عمل موثق", weight:10},
+        {id:2, text:"عدم وجود تأمين طبي للعامل", weight:20},
+        {id:"3-أ", text:"موقع العمل (إجابة غير صحيحة/مبهمة)", weight:20},
+        {id:"3-ب", text:"طبيعة العمل (إجابة غير صحيحة/مبهمة)", weight:30},
+        {id:"3-ج", text:"نشاط المنشأة (إجابة غير صحيحة/مبهمة)", weight:10},
+        {id:4, text:"إقرار العامل أو المنشأة بعدم وجود علاقة عمل فعلية", weight:80},
+        {id:5, text:"عدم دفع الأجر من خلال برنامج حماية الأجور (البنوك/سندات)", weight:30},
+        {id:6, text:"وجود صلة قرابة بين العامل وصاحب العمل", weight:10},
+        {id:7, text:"عدم تسجيل العامل في منصة العمل عن بعد", weight:50},
+        {id:8, text:"وجود تبرير لعدم صرف الأجر لمدة 3 أشهر فأكثر", weight:30},
+        {id:9, text:"عدم تسكين الموظف على المنشأة المسجل عليها", weight:10},
+        {id:10, text:"توظيف فئات بمهنة لا تتناسب مع قدراتهم", weight:60},
+        {id:11, text:"وجود سابقة توطين وهمي على المنشأة أو العامل", weight:20},
+        {id:12, text:"عدم وجود مقر للمنشأة أو عدم تحديث بيانات العنوان", weight:50},
+        {id:13, text:"عدم وجود كشوفات حضور وانصراف", weight:20},
+        {id:14, text:"عدم وجود زي رسمي أو بطاقة تعريفية", weight:10},
+        {id:15, text:"تناقض أقوال العامل مع أقوال صاحب العمل/المسؤول", weight:40}
+    ];
+
+    function unlock() {
+        if(document.getElementById('pass').value === passwordKey) {
             document.getElementById('lockScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
-            draw(); // رسم الجدول عند الدخول
+            renderTable();
         } else {
             document.getElementById('err').style.display = 'block';
         }
     }
 
-    // المعايير الـ 15 المحدثة من ملفك
-    const myData = [
-        {n:1, d:"عدم وجود عقد عمل موثق", w:10},
-        {n:2, d:"عدم وجود تأمين طبي للعامل", w:20},
-        {n:"3-أ", d:"موقع العمل (إجابة غير صحيحة/مبهمة)", w:20},
-        {n:"3-ب", d:"طبيعة العمل (إجابة غير صحيحة/مبهمة)", w:30},
-        {n:"3-ج", d:"نشاط المنشأة (إجابة غير صحيحة/مبهمة)", w:10},
-        {n:4, d:"إقرار العامل او المنشأة بعدم وجود علاقة عمل فعلية", w:80},
-        {n:5, d:"عدم دفع الأجر من خلال برنامج حماية الأجور (البنوك/سندات)", w:30},
-        {n:6, d:"وجود صلة قرابة بين العامل وصاحب العمل", w:
+    function renderTable() {
+        let html = '';
+        criteria.forEach((item, index) => {
+            html += `<div class="row">
+                <span style="width:40px; font-weight:bold;">${item.id}</span>
+                <span style="flex:1;">${item.text}</span>
+                <span class="weight-badge">${item.weight}%</span>
+                <input type="checkbox" class="check-item" data-w="${item.weight}" onchange="updateTotal()" style="width:25px; height:25px; cursor:pointer;">
+            </div>`;
+        });
+        document.getElementById('indicatorsList').innerHTML = html;
+    }
+
+    function updateTotal() {
+        let total = 0;
+        document.querySelectorAll('.check-item:checked').forEach(el => total += parseInt(el.dataset.w));
+        document.getElementById('totalDisplay').innerText = total;
+        
+        const rec = document.getElementById('recommendation');
+        const just = document.getElementById('justification');
+        
+        if(total >= 80) {
+            rec.value = "عدم صحة علاقة العمل";
+            just.value = "عدم كفاية المستندات المقدمة";
+        } else {
+            rec.value = "صحة علاقة العمل";
+            just.value = "العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة";
+        }
+    }
+
+    function handleSync() {
+        if(document.getElementById('recommendation').value === "صحة علاقة العمل")
+            document.getElementById('justification').value = "العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة";
+    }
+
+    function generateExcel() {
+        const empName = document.getElementById('empName').value || "عامل_غير_مسجل";
+        const totalVal = document.getElementById('totalDisplay').innerText + "%";
+
+        const dataRows = [
+            ["جدول المؤشرات والأوزان الاسترشادية - تقرير التوطين الوهمي 2025", "", "", "", ""],
+            ["اسم العامل:", empName, "", "رقم الهوية:", document.getElementById('empId').value],
+            ["رقم السجل:", document.getElementById('crNum').value, "", "رقم المنشأة:", document.getElementById('hrsdNum').value],
+            ["التوصية:", document.getElementById('recommendation').value, "", "المجموع:", totalVal],
+            ["المبرر:", document.getElementById('justification').value, "", "التاريخ:", new Date().toLocaleDateString('ar-SA')],
+            ["ملاحظات:", document.getElementById('extraNotes').value, "", "", ""],
+            [""],
+            ["م", "المؤشر الاسترشادي المكتشف", "الوزن", "التحقق (نعم/لا)", "ملاحظات المراقب"]
+        ];
+
+        criteria.forEach((item, i) => {
+            const isChecked = document.querySelectorAll('.check-item')[i].checked ? "نعم" : "لا";
+            dataRows.push([item.id, item.text, item.weight + "%", isChecked, ""]);
+        });
+
+        const worksheet = XLSX.utils.aoa_to_sheet(dataRows);
+        
+        // ضبط اتجاه الملف من اليمين لليسار RTL
+        if(!worksheet['!views']) worksheet['!views'] = [];
+        worksheet['!views'][0] = { RTL: true };
+
+        // دمج العنوان الرئيسي وتنسيق الأعمدة
+        worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+        worksheet['!cols'] = [{wch: 6}, {wch: 65}, {wch: 12}, {wch: 18}, {wch: 25}];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "تقرير المعاينة");
+        XLSX.writeFile(workbook, `تقرير_ميداني_${empName}.xlsx`);
+    }
+</script>
+</body>
+</html>
