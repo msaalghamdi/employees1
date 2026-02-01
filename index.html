@@ -3,71 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام توليد التقارير المحدث</title>
+    <title>نظام تقييم علاقة العمل المطور 2025</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
-        :root { --main: #1a73e8; --bg: #f8f9fa; --shaded: #efefef; }
+        :root { --main: #1a73e8; --bg: #f8f9fa; }
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; padding: 15px; direction: rtl; }
         #lockScreen { position: fixed; inset: 0; background: white; display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); text-align: center; width: 350px; border-top: 5px solid var(--main); }
         #mainContent { display: none; }
-        .container { max-width: 950px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         .section { border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         input, select, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .row { display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; gap: 15px; transition: 0.2s; }
-        .row:hover { background-color: #fcfcfc; }
+        .row { display: flex; align-items: center; padding: 10px; border-bottom: 1px solid #eee; gap: 10px; }
         .total-box { background: #e8f0fe; padding: 15px; border-radius: 8px; text-align: center; font-size: 1.4rem; font-weight: bold; color: var(--main); margin: 15px 0; border: 2px solid #b6d4fe; }
         .btn { width: 100%; padding: 14px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; color: white; transition: 0.3s; }
-        .btn-blue { background: var(--main); }
         .btn-green { background: #2e7d32; }
-        .btn-gray { background: #555; }
+        .btn-blue { background: var(--main); }
     </style>
 </head>
 <body>
 
 <div id="lockScreen">
     <div class="card">
-        <h2>نظام توليد التقارير</h2>
-        <input type="password" id="pass" placeholder="رمز الدخول" style="text-align: center; font-size: 1.2rem;">
+        <h2>نظام توليد التقارير الميدانية</h2>
+        <input type="password" id="pass" placeholder="رمز الدخول" style="text-align: center;">
         <button onclick="check()" class="btn btn-blue">فتح النظام</button>
-        <p id="err" style="color: red; display: none; margin-top: 10px;">خطأ في الرمز!</p>
     </div>
 </div>
 
 <div id="mainContent">
     <div class="container">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--main); padding-bottom: 10px; margin-bottom: 20px;">
-            <h2 style="margin: 0;">نظام تقييم علاقة العمل المحدث</h2>
+            <h2 style="margin: 0;">جدول المؤشرات والأوزان الاسترشادية للمراقب</h2>
             <button onclick="location.reload()" style="background: #d32f2f; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer;">خروج</button>
         </div>
 
         <div class="section">
-            <h3>بيانات الموظف والمنشأة</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <input type="text" id="empName" placeholder="اسم الموظف">
-                <input type="text" id="empId" placeholder="رقم الهوية / الإقامة">
+                <input type="text" id="empName" placeholder="اسم العامل">
+                <input type="text" id="empId" placeholder="رقم الهوية">
                 <input type="text" id="crNum" placeholder="رقم السجل التجاري">
-                <input type="text" id="hrsdNum" placeholder="رقم المنشأة">
+                <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
             </div>
         </div>
 
         <div class="section">
-            <h3>مؤشرات التحقق (بناءً على الملف الجديد)</h3>
             <div id="list"></div>
             <div class="total-box">إجمالي مؤشر الاشتباه: <span id="total">0</span>%</div>
         </div>
 
         <div class="section">
-            <h3>النتيجة والتوصية النهائية</h3>
+            <h3>النتيجة والتوصية</h3>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                 <select id="rec" onchange="sync()"><option value="صحة علاقة العمل">صحة علاقة العمل</option><option value="عدم صحة علاقة العمل">عدم صحة علاقة العمل</option></select>
-                <select id="just"><option value="العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة">العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة</option><option value="عدم تجاوب المنشأة خلال المهلة النظامية">عدم تجاوب المنشأة خلال المهلة النظامية</option><option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option><option value="إقرار المنشأة/المشترك بعدم وجود علاقة العمل">إقرار المنشأة/المشترك بعدم وجود علاقة العمل</option></select>
+                <select id="just"><option value="العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة">العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة</option><option value="عدم كفاية المستندات المقدمة">عدم كفاية المستندات المقدمة</option><option value="إقرار المنشأة/المشترك بعدم وجود علاقة العمل">إقرار المنشأة/المشترك بعدم وجود علاقة العمل</option><option value="عدم تجاوب المنشأة خلال المهلة النظامية">عدم تجاوب المنشأة خلال المهلة النظامية</option></select>
             </div>
-            <textarea id="notes" rows="2" style="margin-top: 10px;" placeholder="ملاحظات إضافية أو مبررات أخرى..."></textarea>
+            <textarea id="notes" rows="2" style="margin-top: 10px;" placeholder="ملاحظات إضافية..."></textarea>
         </div>
 
-        <button onclick="exportW()" class="btn btn-gray">تصدير تفاصيل المؤشرات</button>
-        <button onclick="exportR()" class="btn btn-green">حفظ التقرير النهائي</button>
+        <button onclick="exportExcel()" class="btn btn-green">تصدير التقرير النهائي (Excel) - RTL</button>
     </div>
 </div>
 
@@ -77,36 +71,38 @@
             document.getElementById('lockScreen').style.display = 'none';
             document.getElementById('mainContent').style.display = 'block';
             draw();
-        } else { document.getElementById('err').style.display = 'block'; }
+        }
     }
 
-    // المصفوفة المحدثة بناءً على ملف Excel المرسل
     const myData = [
-        {n:"1", d:"عدم وجود عقد عمل موثق", w:10},
-        {n:"2", d:"عدم وجود تأمين طبي للموظف", w:15},
-        {n:"3", d:"عدم تناسب المهنة المسجلة مع نشاط المنشأة", w:10},
-        {n:"4", d:"موقع العمل (إجابة غير صحيحة/مبهمة)", w:20},
-        {n:"5", d:"طبيعة العمل (إجابة غير صحيحة/مبهمة)", w:25},
-        {n:"6", d:"نشاط المنشأة (إجابة غير صحيحة/مبهمة)", w:10},
-        {n:"7", d:"إقرار صاحب العمل/المشترك بعدم صحة العلاقة", w:100},
-        {n:"8", d:"عدم تحويل الأجور عبر البنوك (حماية الأجور)", w:20},
-        {n:"9", d:"وجود صلة قرابة بين العامل وصاحب العمل", w:10},
-        {n:"10", d:"العامل مسجل في منشأة أخرى (ازدواجية)", w:15},
-        {n:"11", d:"عدم قدرة المنشأة على تقديم مستندات تثبيت العمل", w:30},
-        {n:"12", d:"المنشأة غير قائمة على أرض الواقع", w:60},
-        {n:"13", d:"العامل خارج المملكة خلال فترة التسجيل", w:100},
-        {n:"14", d:"تسجيل العامل بأثر رجعي لمدة تتجاوز عام", w:25},
-        {n:"15", d:"العامل من الفئات المستثناة التي يمنع توظيفها", w:50}
+        {n:1, d:"عدم وجود عقد عمل موثق", w:10},
+        {n:2, d:"عدم وجود تأمين طبي للعامل", w:20},
+        {n:"3-أ", d:"موقع العمل (إجابة غير صحيحة/مبهمة)", w:20},
+        {n:"3-ب", d:"طبيعة العمل (إجابة غير صحيحة/مبهمة)", w:30},
+        {n:"3-ج", d:"نشاط المنشأة (إجابة غير صحيحة/مبهمة)", w:10},
+        {n:4, d:"إقرار العامل او المنشأة بعدم وجود علاقة عمل فعلية", w:80},
+        {n:5, d:"عدم دفع الأجر من خلال برنامج حماية الأجور (البنوك/سندات)", w:30},
+        {n:6, d:"وجود صلة قرابة بين العامل وصاحب العمل", w:10},
+        {n:7, d:"عدم تسجيل العامل في منصة العمل عن بعد (عند الادعاء بذلك)", w:50},
+        {n:8, d:"وجود تبرير لعدم صرف الأجر لمدة 3 أشهر فأكثر", w:30},
+        {n:9, d:"عدم تسكين الموظف على المنشأة المسجل عليها", w:10},
+        {n:10, d:"توظيف فئات بمهنة لا تتناسب مع قدراتهم (كبار سن/ذوي إعاقة)", w:60},
+        {n:11, d:"وجود سابقة توطين وهمي على المنشأة أو العامل", w:20},
+        {n:12, d:"عدم وجود مقر للمنشأة او عدم تحديث بيانات العنوان الوطني", w:50},
+        {n:13, d:"عدم وجود كشوفات حضور وانصراف (ورقية او إلكترونية)", w:20},
+        {n:14, d:"عدم وجود زي رسمي او بطاقة تعريفية للموظف", w:10},
+        {n:15, d:"عدم وجود ملف للعامل السعودي أو عدم اكتماله يتضمن (اجازات، قرارات إدارية، حضور وانصراف وغيرها من الوقائع الوظيفية)
+", w:40}
     ];
 
     function draw() {
         let h = '';
         myData.forEach((item, i) => {
             h += `<div class="row">
-                <span style="width:30px; font-weight:bold;">${item.n}</span>
+                <span style="width:40px; font-weight:bold;">${item.n}</span>
                 <span style="flex:1;">${item.d}</span>
-                <span style="width:50px; color:red; font-weight:bold; text-align:left;">${item.w}%</span>
-                <input type="checkbox" class="c-box" data-w="${item.w}" onchange="calc()" style="width:20px; height:20px; cursor:pointer;">
+                <span style="width:45px; color:red; font-weight:bold;">${item.w}%</span>
+                <input type="checkbox" class="c-box" data-w="${item.w}" onchange="calc()" style="width:22px; height:22px;">
             </div>`;
         });
         document.getElementById('list').innerHTML = h;
@@ -117,8 +113,6 @@
         document.querySelectorAll('.c-box:checked').forEach(x => t += parseInt(x.dataset.w));
         document.getElementById('total').innerText = t;
         let r = document.getElementById('rec'), j = document.getElementById('just');
-        
-        // إذا وصل المؤشر إلى 80% أو أكثر تصبح العلاقة غير صحيحة تلقائياً
         if(t >= 80) { 
             r.value = "عدم صحة علاقة العمل"; 
             j.value = "عدم كفاية المستندات المقدمة";
@@ -133,39 +127,41 @@
             document.getElementById('just').value = "العلاقة صحيحة و لا يوجد مبرر لإلغاء المدة";
     }
 
-    function exportW() {
-        const name = document.getElementById('empName').value || "غير_مسجل";
-        let rows = [
-            ["جدول تفاصيل مؤشرات الاشتباه المكتشفة", "", "", "", ""],
-            ["اسم الموظف:", name, "الهوية:", document.getElementById('empId').value, "التاريخ:", new Date().toLocaleDateString('ar-SA')],
-            ["إجمالي النسبة:", document.getElementById('total').innerText + "%"],
-            ["#", "المؤشر", "الوزن", "التحقق", "ملاحظات"]
-        ];
-        myData.forEach((x, i) => {
-            rows.push([x.n, x.d, x.w+"%", document.querySelectorAll('.c-box')[i].checked ? "متحقق" : "غير متوفر", ""]);
-        });
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Details");
-        XLSX.writeFile(wb, `مؤشرات_${name}.xlsx`);
-    }
+    function exportExcel() {
+        const name = document.getElementById('empName').value || "غير مسجل";
+        const id = document.getElementById('empId').value || "-";
+        const total = document.getElementById('total').innerText + "%";
 
-    function exportR() {
-        const name = document.getElementById('empName').value || "موظف";
-        const head = ["الاسم", "الهوية", "المنشأة", "إجمالي الاشتباه", "التوصية", "المبرر", "ملاحظات إضافية"];
-        const vals = [
-            name, 
-            document.getElementById('empId').value, 
-            document.getElementById('hrsdNum').value, 
-            document.getElementById('total').innerText + "%", 
-            document.getElementById('rec').value, 
-            document.getElementById('just').value, 
-            document.getElementById('notes').value
+        // ترتيب البيانات لتكون من اليمين لليسار في ملف الإكسل
+        let rows = [
+            ["جدول المؤشرات والأوزان الاسترشادية للمراقب الميداني (محدث 2025)", "", "", "", ""],
+            ["اسم العامل:", name, "", "رقم الهوية:", id],
+            ["رقم السجل:", document.getElementById('crNum').value, "", "رقم المنشأة:", document.getElementById('hrsdNum').value],
+            ["التوصية:", document.getElementById('rec').value, "", "المجموع الكلي:", total],
+            ["المبرر:", document.getElementById('just').value, "", "تاريخ التقرير:", new Date().toLocaleDateString('ar-SA')],
+            ["ملاحظات:", document.getElementById('notes').value, "", "", ""],
+            [""],
+            ["م", "المؤشر الاسترشادي", "الوزن النسبي", "تم التحقق (نعم/لا)", "ملاحظات المراقب"]
         ];
-        const ws = XLSX.utils.aoa_to_sheet([head, vals]);
+
+        myData.forEach((x, i) => {
+            let isChecked = document.querySelectorAll('.c-box')[i].checked ? "نعم" : "لا";
+            rows.push([x.n, x.d, x.w + "%", isChecked, ""]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+
+        // تفعيل خاصية اليمين لليسار في الإكسل
+        if(!ws['!views']) ws['!views'] = [];
+        ws['!views'][0] = { RTL: true };
+
+        // تنسيقات العرض والدمج
+        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 4 } }];
+        ws['!cols'] = [{wch: 5}, {wch: 60}, {wch: 12}, {wch: 18}, {wch: 25}];
+
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Final");
-        XLSX.writeFile(wb, `تقرير_${name}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "التقرير الميداني");
+        XLSX.writeFile(wb, `تقرير_ميداني_${name}.xlsx`);
     }
 </script>
 </body>
