@@ -19,40 +19,40 @@ button{background:#2e7d32;color:#fff;border:none;font-weight:bold;cursor:pointer
 
 <!-- شاشة الدخول -->
 <div id="lock">
-<div class="container" style="max-width:400px;text-align:center">
-<h3>نظام التقييم الميداني</h3>
-<input id="pass" type="password" placeholder="رمز الدخول">
-<button onclick="login()">دخول</button>
-<p id="err" style="color:red;display:none">رمز غير صحيح</p>
-</div>
+  <div class="container" style="max-width:400px;text-align:center">
+    <h3>نظام التقييم الميداني</h3>
+    <input id="pass" type="password" placeholder="رمز الدخول">
+    <button onclick="login()">دخول</button>
+    <p id="err" style="color:red;display:none">رمز غير صحيح</p>
+  </div>
 </div>
 
 <!-- النظام -->
 <div id="main">
 <div class="container">
 
-<h2>نموذج المؤشرات والأوزان</h2>
+<h2>نموذج المؤشرات والأوزان الاسترشادية</h2>
 
 <div class="section">
-<input type="file" id="template" accept=".xlsx">
-<input id="empName" placeholder="اسم العامل">
-<input id="empId" placeholder="رقم الهوية">
-<input id="crNum" placeholder="رقم السجل التجاري">
-<input id="hrsdNum" placeholder="رقم المنشأة">
+  <input type="file" id="template" accept=".xlsx">
+  <input id="empName" placeholder="اسم العامل">
+  <input id="empId" placeholder="رقم الهوية / الإقامة">
+  <input id="crNum" placeholder="رقم السجل التجاري">
+  <input id="hrsdNum" placeholder="رقم المنشأة (700)">
 </div>
 
 <div class="section">
-<h3>المؤشرات (15)</h3>
-<div id="table"></div>
-<p><strong>المجموع:</strong> <span id="total">0</span>%</p>
+  <h3>المؤشرات (15)</h3>
+  <div id="table"></div>
+  <p><strong>المجموع:</strong> <span id="total">0</span>%</p>
 </div>
 
 <div class="section">
-<select id="rec">
-<option>صحة علاقة العمل</option>
-<option>عدم صحة علاقة العمل</option>
-</select>
-<textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
+  <select id="rec">
+    <option>صحة علاقة العمل</option>
+    <option>عدم صحة علاقة العمل</option>
+  </select>
+  <textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
 </div>
 
 <button onclick="exportExcel()">تصدير التقرير الرسمي</button>
@@ -61,87 +61,48 @@ button{background:#2e7d32;color:#fff;border:none;font-weight:bold;cursor:pointer
 </div>
 
 <script>
+/* ===== الإعدادات ===== */
 const PASSWORD = "199022";
 
+/* ===== المؤشرات ===== */
 const criteria = [
 ["عدم وجود عقد عمل موثق",10],
-["عدم وجود تأمين طبي",20],
-["موقع العمل غير صحيح",20],
-["طبيعة العمل غير واضحة",30],
-["نشاط المنشأة غير مطابق",10],
-["إقرار بعدم وجود علاقة عمل",80],
+["عدم وجود تأمين طبي للعامل",20],
+["موقع العمل (إجابة غير صحيحة/مبهمة)",20],
+["طبيعة العمل (إجابة غير صحيحة/مبهمة)",30],
+["نشاط المنشأة (إجابة غير صحيحة/مبهمة)",10],
+["إقرار بعدم وجود علاقة عمل فعلية",80],
 ["عدم دفع الأجر عبر حماية الأجور",30],
-["صلة قرابة",10],
+["وجود صلة قرابة",10],
 ["عدم تسجيل العمل عن بعد",50],
 ["تبرير عدم صرف الأجر 3 أشهر",30],
-["عدم تسكين العامل",10],
+["عدم تسكين العامل على المنشأة",10],
 ["مهنة لا تتناسب مع القدرات",60],
-["سابقة توطين وهمي",20],
+["وجود سابقة توطين وهمي",20],
 ["عدم وجود مقر للمنشأة",50],
 ["عدم اكتمال ملف العامل",40]
 ];
 
+/* ===== تسجيل الدخول ===== */
 function login(){
-if(pass.value===PASSWORD){
-lock.style.display="none";
-main.style.display="block";
-render();
-}else err.style.display="block";
+  if(document.getElementById("pass").value === PASSWORD){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("main").style.display="block";
+    render();
+  } else {
+    document.getElementById("err").style.display="block";
+  }
 }
 
+/* ===== رسم الجدول ===== */
 function render(){
-let html="";
-criteria.forEach((c,i)=>{
-html+=`
-<div class="row">
-<span>${i+1}</span>
-<span style="flex:1">${c[0]}</span>
-<span class="badge">${c[1]}%</span>
-<input type="checkbox" data-w="${c[1]}" onchange="calc()">
-</div>`;
-});
-table.innerHTML=html;
-}
-
-function calc(){
-let t=0;
-document.querySelectorAll("input[type=checkbox]:checked")
-.forEach(c=>t+=Number(c.dataset.w));
-total.innerText=t;
-rec.value = t>=80 ? "عدم صحة علاقة العمل" : "صحة علاقة العمل";
-}
-
-function exportExcel(){
-const file = template.files[0];
-if(!file){alert("ارفع ملف النموذج الرسمي");return;}
-
-const reader=new FileReader();
-reader.onload=e=>{
-const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"});
-const ws=wb.Sheets[wb.SheetNames[0]];
-
-// تعبئة بيانات (عدّل الخلايا حسب نموذجك)
-ws["B4"].v=empName.value;
-ws["E4"].v=empId.value;
-ws["B5"].v=crNum.value;
-ws["E5"].v=hrsdNum.value;
-ws["B6"].v=rec.value;
-ws["B7"].v=notes.value;
-
-let r=12;
-document.querySelectorAll("#table .row").forEach((row,i)=>{
-ws["A"+r]={v:i+1};
-ws["B"+r]={v:criteria[i][0]};
-ws["C"+r]={v:criteria[i][1]+"%"};
-ws["D"+r]={v:row.querySelector("input").checked?"نعم":"لا"};
-r++;
-});
-
-XLSX.writeFile(wb,"تقرير_التوطين_الرسمي.xlsx");
-};
-reader.readAsArrayBuffer(file);
-}
-</script>
-
-</body>
-</html>
+  let html="";
+  criteria.forEach((c,i)=>{
+    html+=`
+    <div class="row">
+      <span>${i+1}</span>
+      <span style="flex:1">${c[0]}</span>
+      <span class="badge">${c[1]}%</span>
+      <input type="checkbox" data-w="${c[1]}" onchange="calc()">
+    </div>`;
+  });
