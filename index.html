@@ -2,69 +2,142 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>تعبئة نموذج التوطين الوهمي</title>
+<title>نظام تقييم التوطين الوهمي</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
-body{font-family:Tahoma;background:#f5f5f5;padding:20px}
-.container{background:#fff;padding:25px;border-radius:10px;max-width:900px;margin:auto}
-input,select,textarea,button{width:100%;padding:10px;margin-top:8px}
+body{font-family:Tahoma;background:#f4f6f8;padding:20px}
+.container{background:#fff;padding:25px;border-radius:12px;max-width:1000px;margin:auto}
+.section{border:1px solid #ddd;padding:15px;border-radius:10px;margin-bottom:15px}
+.row{display:flex;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:8px}
+input,select,textarea,button{width:100%;padding:10px;margin-top:6px}
 button{background:#2e7d32;color:#fff;border:none;font-weight:bold;cursor:pointer}
+.badge{background:#fee;color:#c62828;padding:4px 8px;border-radius:6px}
+#main{display:none}
 </style>
 </head>
 <body>
 
-<div class="container">
-<h2>نموذج تعبئة تقرير التوطين الوهمي</h2>
+<!-- شاشة الدخول -->
+<div id="lock">
+<div class="container" style="max-width:400px;text-align:center">
+<h3>نظام التقييم الميداني</h3>
+<input id="pass" type="password" placeholder="رمز الدخول">
+<button onclick="login()">دخول</button>
+<p id="err" style="color:red;display:none">رمز غير صحيح</p>
+</div>
+</div>
 
-<input id="templateFile" type="file" accept=".xlsx">
+<!-- النظام -->
+<div id="main">
+<div class="container">
+
+<h2>نموذج المؤشرات والأوزان</h2>
+
+<div class="section">
+<input type="file" id="template" accept=".xlsx">
 <input id="empName" placeholder="اسم العامل">
 <input id="empId" placeholder="رقم الهوية">
 <input id="crNum" placeholder="رقم السجل التجاري">
 <input id="hrsdNum" placeholder="رقم المنشأة">
-<select id="recommendation">
+</div>
+
+<div class="section">
+<h3>المؤشرات (15)</h3>
+<div id="table"></div>
+<p><strong>المجموع:</strong> <span id="total">0</span>%</p>
+</div>
+
+<div class="section">
+<select id="rec">
 <option>صحة علاقة العمل</option>
 <option>عدم صحة علاقة العمل</option>
 </select>
-<textarea id="notes" placeholder="ملاحظات"></textarea>
+<textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
+</div>
 
-<button onclick="exportExcel()">تعبئة النموذج الرسمي</button>
+<button onclick="exportExcel()">تصدير التقرير الرسمي</button>
+
+</div>
 </div>
 
 <script>
+const PASSWORD = "199022";
+
 const criteria = [
-{ id:1, text:"عدم وجود عقد عمل موثق", weight:10 },
-{ id:2, text:"عدم وجود تأمين طبي", weight:20 },
-{ id:3, text:"إقرار بعدم وجود علاقة عمل", weight:80 }
+["عدم وجود عقد عمل موثق",10],
+["عدم وجود تأمين طبي",20],
+["موقع العمل غير صحيح",20],
+["طبيعة العمل غير واضحة",30],
+["نشاط المنشأة غير مطابق",10],
+["إقرار بعدم وجود علاقة عمل",80],
+["عدم دفع الأجر عبر حماية الأجور",30],
+["صلة قرابة",10],
+["عدم تسجيل العمل عن بعد",50],
+["تبرير عدم صرف الأجر 3 أشهر",30],
+["عدم تسكين العامل",10],
+["مهنة لا تتناسب مع القدرات",60],
+["سابقة توطين وهمي",20],
+["عدم وجود مقر للمنشأة",50],
+["عدم اكتمال ملف العامل",40]
 ];
 
-function exportExcel() {
-const file = document.getElementById("templateFile").files[0];
-if(!file){ alert("أرفق ملف النموذج الرسمي"); return; }
+function login(){
+if(pass.value===PASSWORD){
+lock.style.display="none";
+main.style.display="block";
+render();
+}else err.style.display="block";
+}
 
-const reader = new FileReader();
-reader.onload = e => {
-const wb = XLSX.read(new Uint8Array(e.target.result), {type:"array"});
-const ws = wb.Sheets[wb.SheetNames[0]];
+function render(){
+let html="";
+criteria.forEach((c,i)=>{
+html+=`
+<div class="row">
+<span>${i+1}</span>
+<span style="flex:1">${c[0]}</span>
+<span class="badge">${c[1]}%</span>
+<input type="checkbox" data-w="${c[1]}" onchange="calc()">
+</div>`;
+});
+table.innerHTML=html;
+}
 
-// بيانات عامة (عدّل الخلايا حسب ملفك)
-ws["B4"].v = empName.value;
-ws["E4"].v = empId.value;
-ws["B5"].v = crNum.value;
-ws["E5"].v = hrsdNum.value;
-ws["B6"].v = recommendation.value;
-ws["B7"].v = notes.value;
+function calc(){
+let t=0;
+document.querySelectorAll("input[type=checkbox]:checked")
+.forEach(c=>t+=Number(c.dataset.w));
+total.innerText=t;
+rec.value = t>=80 ? "عدم صحة علاقة العمل" : "صحة علاقة العمل";
+}
 
-// جدول المؤشرات (يبدأ من الصف 12 كمثال)
-let row = 12;
-criteria.forEach(c => {
-ws["A"+row] = {v:c.id};
-ws["B"+row] = {v:c.text};
-ws["C"+row] = {v:c.weight+"%"};
-ws["D"+row] = {v:"نعم"};
-row++;
+function exportExcel(){
+const file = template.files[0];
+if(!file){alert("ارفع ملف النموذج الرسمي");return;}
+
+const reader=new FileReader();
+reader.onload=e=>{
+const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array"});
+const ws=wb.Sheets[wb.SheetNames[0]];
+
+// تعبئة بيانات (عدّل الخلايا حسب نموذجك)
+ws["B4"].v=empName.value;
+ws["E4"].v=empId.value;
+ws["B5"].v=crNum.value;
+ws["E5"].v=hrsdNum.value;
+ws["B6"].v=rec.value;
+ws["B7"].v=notes.value;
+
+let r=12;
+document.querySelectorAll("#table .row").forEach((row,i)=>{
+ws["A"+r]={v:i+1};
+ws["B"+r]={v:criteria[i][0]};
+ws["C"+r]={v:criteria[i][1]+"%"};
+ws["D"+r]={v:row.querySelector("input").checked?"نعم":"لا"};
+r++;
 });
 
-XLSX.writeFile(wb,"جدول-المؤشرات-و الاوزان.xlsx");
+XLSX.writeFile(wb,"تقرير_التوطين_الرسمي.xlsx");
 };
 reader.readAsArrayBuffer(file);
 }
