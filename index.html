@@ -82,7 +82,7 @@
 <div class="container">
     <div id="lock-screen">
         <h2>نظام المراقب الميداني</h2>
-        <input type="password" id="pass" placeholder="رمز الدخول (1990)">
+        <input type="password" id="pass" placeholder="رمز الدخول (ادخل)">
         <button onclick="login()" style="margin-top: 15px">دخول النظام</button>
         <p id="err" style="color:red; display:none; margin-top:10px">الرمز غير صحيح</p>
     </div>
@@ -93,8 +93,6 @@
         <div class="grid-info">
             <input type="text" id="empName" placeholder="اسم العامل">
             <input type="text" id="empId" placeholder="رقم الهوية">
-            <input type="text" id="crNum" placeholder="رقم السجل التجاري">
-            <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
         </div>
 
         <div id="indicator-list" style="margin-top: 20px; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
@@ -123,16 +121,16 @@
         ["موقع العمل (إجابة غير صحيحة/مبهمة)", 20],
         ["طبيعة العمل (إجابة غير صحيحة/مبهمة)", 30],
         ["نشاط المنشأة (إجابة غير صحيحة/مبهمة)", 10],
-        ["إقرار بعدم وجود علاقة عمل فعلية", 80],
+        ["إقرار العامل او صاحب العمل  بعدم وجود علاقة عمل فعلية", 80],
         ["عدم دفع الأجر عبر حماية الأجور", 30],
         ["وجود صلة قرابة", 10],
-        ["عدم تسجيل العمل عن بعد", 50],
-        ["تبرير عدم صرف الأجر 3 أشهر", 30],
+        ["عدم تسجيل العمل في منصة العمل  عن بعد", 50],
+        [" وجود تبرير من المنشاة عدم صرف الأجر 3 أشهر", 30],
         ["عدم تسكين العامل على المنشأة", 10],
-        ["مهنة لا تتناسب مع القدرات", 60],
+        ["توظيف نساء او شخص كبير في السن او ذوي الاعاقة بمهنة لا تتوافق مع قدراته على ادائها ", 60],
         ["وجود سابقة توطين وهمي", 20],
         ["عدم وجود مقر للمنشأة", 50],
-        ["عدم اكتمال ملف العامل", 40]
+        ["عدم وجود ملف للعامل السعودي او عدم اكتمالة بما يتمضن اجازات قرارات حضور و انصراف ", 40]
     ];
 
     function login() {
@@ -228,9 +226,10 @@
         XLSX.utils.book_append_sheet(wb, ws, "تقرير التفتيش");
         
         // التصدير الفعلي
-        XLSX.writeFile(wb, `تقرير_المراقب_${empName}.xlsx`);
+        XLSX.writeFile(wb, `تقرير_االمرشرات_والاوزان_${empName}.xlsx`);
     }
 </script>
 
 </body>
 </html>
+
