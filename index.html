@@ -1,4 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>نظام تقييم التوطين الوهمي</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
+body{font-family:Tahoma;background:#f4f6f8;padding:20px}
+.container{background:#fff;padding:25px;border-radius:12px;max-width:1000px;margin:auto}
+.section{border:1px solid #ddd;padding:15px;border-radius:10px;margin-bottom:15px}
+.row{display:flex;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:8px}
+input,select,textarea,button{width:100%;padding:10px;margin-top:6px}
+button{background:#2e7d32;color:#fff;border:none;font-weight:bold;cursor:pointer}
+.badge{background:#fee;color:#c62828;padding:4px 8px;border-radius:6px}
+#main{display:none}
+</style>
+</head>
+<body>
+
+<!-- شاشة الدخول -->
+<div id="lock">
+  <div class="container" style="max-width:400px;text-align:center">
+    <h3>نظام التقييم الميداني</h3>
+    <input id="pass" type="password" placeholder="رمز الدخول">
+    <button onclick="login()">دخول</button>
+    <p id="err" style="color:red;display:none">رمز غير صحيح</p>
+  </div>
+</div>
+
+<!-- النظام -->
+<div id="main">
+<div class="container">
+
+<h2>نموذج المؤشرات والأوزان الاسترشادية</h2>
+
+<div class="section">
+  <input type="file" id="template" accept=".xlsx">
+  <input id="empName" placeholder="اسم العامل">
+  <input id="empId" placeholder="رقم الهوية / الإقامة">
+  <input id="crNum" placeholder="رقم السجل التجاري">
+  <input id="hrsdNum" placeholder="رقم المنشأة (700)">
+</div>
+
+<div class="section">
+  <h3>المؤشرات (15)</h3>
+  <div id="table"></div>
+  <p><strong>المجموع:</strong> <span id="total">0</span>%</p>
+</div>
+
+<div class="section">
+  <select id="rec">
+    <option>صحة علاقة العمل</option>
+    <option>عدم صحة علاقة العمل</option>
+  </select>
+  <textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
+</div>
+
+<button onclick="exportExcel()">تصدير التقرير الرسمي</button>
+
+</div>
+</div>
+
+<style>
+  
   .risk-high { color: #c62828; font-weight: bold; border: 2px solid #c62828; padding: 10px; }
   .risk-low { color: #2e7d32; }
   .row:hover { background-color: #f1f1f1; cursor: pointer; }
@@ -50,3 +113,4 @@ function exportExcel() {
     XLSX.writeFile(wb, `تقرير_${document.getElementById("empName").value}.xlsx`);
 }
 </script>
+
