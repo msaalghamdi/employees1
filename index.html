@@ -3,176 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التقييم الميداني الذكي</title>
+    <title>نظام التقييم الميداني - نسخة احترافية</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
             --primary: #1a5f7a;
             --success: #2e7d32;
-            --warning: #f57c00;
             --danger: #d32f2f;
-            --bg: #eff2f5;
+            --bg: #f4f7f9;
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             background-color: var(--bg);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
+            margin: 0; padding: 10px;
+            display: flex; justify-content: center;
         }
 
         .container {
-            width: 100%;
-            max-width: 800px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            width: 100%; max-width: 800px;
+            background: white; padding: 20px;
+            border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        /* شاشة الدخول */
-        #lock-screen {
-            text-align: center;
-            padding: 50px 20px;
-        }
+        #lock-screen { text-align: center; padding: 50px 20px; }
 
         input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 16px;
+            width: 100%; padding: 12px; margin: 8px 0;
+            border: 1px solid #ccc; border-radius: 8px;
+            box-sizing: border-box; font-size: 16px;
         }
 
-        .grid-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        /* جدول المؤشرات المتجاوب */
-        .indicator-list {
-            margin-top: 20px;
-        }
+        .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            transition: 0.2s;
+            display: flex; align-items: center; padding: 15px;
+            border-bottom: 1px solid #eee; cursor: pointer;
+            transition: background 0.2s; user-select: none;
         }
 
-        .item:hover { background: #f9f9f9; }
+        .item:hover { background: #f0f7f9; }
 
         .item input[type="checkbox"] {
-            width: 22px;
-            height: 22px;
-            margin-left: 15px;
-            cursor: pointer;
+            width: 25px; height: 25px; margin-left: 15px;
+            pointer-events: none; /* لمنع تداخل النقرات */
         }
 
-        .label-text { flex: 1; font-size: 15px; line-height: 1.4; }
+        .label-text { flex: 1; font-size: 16px; pointer-events: none; }
 
         .weight-badge {
-            background: #e3f2fd;
-            color: #1976d2;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
+            background: #e3f2fd; color: #1976d2;
+            padding: 4px 10px; border-radius: 6px;
+            font-size: 14px; font-weight: bold; pointer-events: none;
         }
 
-        /* لوحة النتائج */
         .score-box {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            margin: 20px 0;
-            border: 2px solid #e2e8f0;
+            background: #f8fafc; padding: 20px;
+            border-radius: 12px; text-align: center;
+            margin: 20px 0; border: 2px solid #e2e8f0;
         }
 
-        .score-box.danger { border-color: var(--danger); background: #fff5f5; }
-        .score-box.success { border-color: var(--success); background: #f6fff6; }
-
-        .big-score { font-size: 40px; font-weight: bold; margin: 5px 0; }
+        .big-score { font-size: 45px; font-weight: bold; margin: 10px 0; }
 
         button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            transition: 0.3s;
+            background: var(--primary); color: white;
+            border: none; padding: 18px; border-radius: 10px;
+            font-size: 18px; font-weight: bold; cursor: pointer;
+            width: 100%; transition: 0.3s;
         }
 
         button:active { transform: scale(0.98); }
 
-        @media (max-width: 600px) {
-            .grid-info { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 600px) { .grid-info { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div id="lock-screen">
-        <h2 style="color: var(--primary)">نظام التقييم الميداني</h2>
-        <input type="password" id="pass" placeholder="أدخل رمز الدخول">
-        <button onclick="login()" style="margin-top: 10px">دخول</button>
-        <p id="err" style="color:red; display:none">الرمز غير صحيح</p>
+        <h2>نظام المراقب الميداني</h2>
+        <input type="password" id="pass" placeholder="رمز الدخول (1990)">
+        <button onclick="login()" style="margin-top: 15px">دخول النظام</button>
+        <p id="err" style="color:red; display:none; margin-top:10px">الرمز غير صحيح</p>
     </div>
 
     <div id="main-app" style="display:none">
-        <h2 style="text-align: center; color: var(--primary)">نموذج تقييم علاقة العمل</h2>
+        <h2 style="text-align: center; color: var(--primary)">التقييم الميداني للعلاقة التعاقدية</h2>
         
         <div class="grid-info">
             <input type="text" id="empName" placeholder="اسم العامل">
-            <input type="text" id="empId" placeholder="رقم الهوية / الإقامة">
+            <input type="text" id="empId" placeholder="رقم الهوية">
+            <input type="text" id="crNum" placeholder="رقم السجل التجاري">
+            <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
         </div>
 
-        <div class="indicator-list" id="indicator-list">
+        <div id="indicator-list" style="margin-top: 20px; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
             </div>
 
         <div class="score-box" id="result-card">
-            <div style="font-size: 14px; color: #666;">إجمالي مؤشرات الاشتباه</div>
+            <div style="font-size: 16px;">مجموع أوزان المخاطر</div>
             <div class="big-score" id="total-score">0%</div>
-            <div id="status-text" style="font-weight: bold; margin-bottom: 10px;">الحالة: مستقرة</div>
+            <div id="status-text" style="font-weight: bold; margin-bottom: 10px;">الحالة: سليمة</div>
+            
             <select id="final-rec">
-                <option value="صحة علاقة العمل">صحة علاقة العمل</option>
-                <option value="عدم صحة علاقة العمل (توطين وهمي)">عدم صحة علاقة العمل (توطين وهمي)</option>
+                <option value="صحة علاقة العمل">توصية المراقب: صحة علاقة العمل</option>
+                <option value="عدم صحة علاقة العمل">توصية المراقب: عدم صحة علاقة العمل</option>
             </select>
-            <textarea id="notes" placeholder="ملاحظات المفتش الإضافية..." rows="3"></textarea>
+            <textarea id="notes" placeholder="ملاحظات المفتش الميدانية..." rows="3"></textarea>
         </div>
 
-        <button onclick="exportData()" style="background: var(--success);">تصدير التقرير (Excel)</button>
+        <button onclick="exportExcel()" style="background: var(--success);">تصدير التقرير النهائي (Excel)</button>
     </div>
 </div>
 
 <script>
-    // 1. ضع بيانات جدولك هنا (الاسم، والوزن)
     const criteria = [
         ["عدم وجود عقد عمل موثق", 10],
         ["عدم وجود تأمين طبي للعامل", 20],
-        ["موقع العمل (إجابة غير صحيحة)", 20],
-        ["طبيعة العمل (إجابة غير صحيحة)", 30],
-        ["نشاط المنشأة (إجابة غير صحيحة)", 10],
+        ["موقع العمل (إجابة غير صحيحة/مبهمة)", 20],
+        ["طبيعة العمل (إجابة غير صحيحة/مبهمة)", 30],
+        ["نشاط المنشأة (إجابة غير صحيحة/مبهمة)", 10],
         ["إقرار بعدم وجود علاقة عمل فعلية", 80],
         ["عدم دفع الأجر عبر حماية الأجور", 30],
         ["وجود صلة قرابة", 10],
         ["عدم تسجيل العمل عن بعد", 50],
         ["تبرير عدم صرف الأجر 3 أشهر", 30],
+        ["عدم تسكين العامل على المنشأة", 10],
         ["مهنة لا تتناسب مع القدرات", 60],
+        ["وجود سابقة توطين وهمي", 20],
         ["عدم وجود مقر للمنشأة", 50],
         ["عدم اكتمال ملف العامل", 40]
     ];
@@ -181,25 +139,25 @@
         if(document.getElementById("pass").value === "1990") {
             document.getElementById("lock-screen").style.display = "none";
             document.getElementById("main-app").style.display = "block";
-            initIndicators();
+            renderIndicators();
         } else {
             document.getElementById("err").style.display = "block";
         }
     }
 
-    function initIndicators() {
+    function renderIndicators() {
         const list = document.getElementById("indicator-list");
         list.innerHTML = criteria.map((c, i) => `
-            <div class="item" onclick="toggle(${i})">
-                <input type="checkbox" id="c-${i}" data-w="${c[1]}" onchange="calculate()">
+            <div class="item" onclick="toggleItem(${i})">
+                <input type="checkbox" id="check-${i}" data-w="${c[1]}">
                 <div class="label-text">${c[0]}</div>
                 <div class="weight-badge">${c[1]}%</div>
             </div>
         `).join('');
     }
 
-    function toggle(i) {
-        const cb = document.getElementById(`c-${i}`);
+    function toggleItem(i) {
+        const cb = document.getElementById(`check-${i}`);
         cb.checked = !cb.checked;
         calculate();
     }
@@ -210,50 +168,67 @@
             total += parseInt(cb.dataset.w);
         });
 
-        const scoreEl = document.getElementById("total-score");
-        const statusEl = document.getElementById("status-text");
-        const card = document.getElementById("result-card");
+        document.getElementById("total-score").innerText = total + "%";
+        const statusText = document.getElementById("status-text");
         const rec = document.getElementById("final-rec");
 
-        scoreEl.innerText = total + "%";
-
         if(total >= 80) {
-            card.className = "score-box danger";
-            statusEl.innerText = "الحالة: اشتباه عالي جداً";
-            statusEl.style.color = "var(--danger)";
-            rec.value = "عدم صحة علاقة العمل (توطين وهمي)";
+            statusText.innerText = "الحالة: اشتباه توطين وهمي";
+            statusText.style.color = "var(--danger)";
+            rec.value = "عدم صحة علاقة العمل";
         } else {
-            card.className = "score-box success";
-            statusEl.innerText = "الحالة: طبيعية / تدقيق منخفض";
-            statusEl.style.color = "var(--success)";
+            statusText.innerText = "الحالة: سليمة";
+            statusText.style.color = "var(--success)";
             rec.value = "صحة علاقة العمل";
         }
     }
 
-    function exportData() {
-        const name = document.getElementById("empName").value || "بدون_اسم";
-        const rows = [
-            ["تقرير التقييم الميداني الرسمي"],
-            ["اسم العامل", document.getElementById("empName").value],
-            ["رقم الهوية", document.getElementById("empId").value],
-            ["السجل التجاري", document.getElementById("crNum").value],
-            ["رقم المنشأة", document.getElementById("hrsdNum").value],
-            ["النتيجة الإجمالية", document.getElementById("total-score").innerText],
-            ["التوصية النهائية", document.getElementById("final-rec").value],
-            ["الملاحظات", document.getElementById("notes").value],
-            [],
-            ["المؤشر", "الوزن", "الحالة"]
+    function exportExcel() {
+        const empName = document.getElementById("empName").value || "بدون اسم";
+        
+        // 1. بناء هيكل البيانات
+        const wb = XLSX.utils.book_new();
+        
+        // الصف الأول المدمج (العنوان)
+        const headerTitle = [["جدول المؤشرات و الاوزان الاسترشادية للمراقب"]];
+        
+        // بيانات العامل والمنشأة
+        const infoData = [
+            ["اسم العامل", empName, "رقم الهوية", document.getElementById("empId").value],
+            ["السجل التجاري", document.getElementById("crNum").value, "رقم المنشأة", document.getElementById("hrsdNum").value],
+            ["النتيجة النهائية", document.getElementById("total-score").innerText, "التوصية", document.getElementById("final-rec").value],
+            ["ملاحظات المراقب", document.getElementById("notes").value],
+            [] // صف فارغ
         ];
 
-        criteria.forEach((c, i) => {
-            const checked = document.getElementById(`c-${i}`).checked ? "متحقق" : "غير متحقق";
-            rows.push([c[0], c[1] + "%", checked]);
-        });
+        // جدول المؤشرات
+        const tableHead = [["م", "المؤشر", "الوزن الاسترشادي", "الحالة (نعم/لا)"]];
+        const tableRows = criteria.map((c, i) => [
+            i + 1,
+            c[0],
+            c[1] + "%",
+            document.getElementById(`check-${i}`).checked ? "نعم" : "لا"
+        ]);
 
-        const ws = XLSX.utils.aoa_to_sheet(rows);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "التقرير");
-        XLSX.writeFile(wb, `تقرير_${name}.xlsx`);
+        // دمج كل البيانات في مصفوفة واحدة
+        const finalContent = [...headerTitle, ...infoData, ...tableHead, ...tableRows];
+
+        // تحويل المصفوفة إلى ورقة عمل
+        const ws = XLSX.utils.aoa_to_sheet(finalContent);
+
+        // --- عملية الدمج (Merging) ---
+        // دمج العنوان من A1 إلى D1
+        ws['!merges'] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } // دمج أول صف لـ 4 أعمدة
+        ];
+
+        // ضبط عرض الأعمدة لتكون واضحة
+        ws['!cols'] = [{ wch: 5 }, { wch: 45 }, { wch: 15 }, { wch: 15 }];
+
+        XLSX.utils.book_append_sheet(wb, ws, "تقرير التفتيش");
+        
+        // التصدير الفعلي
+        XLSX.writeFile(wb, `تقرير_المراقب_${empName}.xlsx`);
     }
 </script>
 
