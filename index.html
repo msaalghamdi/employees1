@@ -1,116 +1,278 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>نظام تقييم التوطين الوهمي</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<style>
-body{font-family:Tahoma;background:#f4f6f8;padding:20px}
-.container{background:#fff;padding:25px;border-radius:12px;max-width:1000px;margin:auto}
-.section{border:1px solid #ddd;padding:15px;border-radius:10px;margin-bottom:15px}
-.row{display:flex;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:8px}
-input,select,textarea,button{width:100%;padding:10px;margin-top:6px}
-button{background:#2e7d32;color:#fff;border:none;font-weight:bold;cursor:pointer}
-.badge{background:#fee;color:#c62828;padding:4px 8px;border-radius:6px}
-#main{display:none}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام التقييم الميداني الذكي</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --success: #2e7d32;
+            --warning: #f57c00;
+            --danger: #d32f2f;
+            --bg: #f8fafc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        h2, h3 { color: var(--primary); text-align: center; margin-bottom: 25px; }
+
+        /* شاشة الدخول */
+        #lock-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80vh;
+        }
+        .login-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 350px;
+            text-align: center;
+        }
+
+        /* تنسيق المدخلات */
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        input:focus { border-color: var(--primary); box-shadow: 0 0 5px rgba(26,95,122,0.2); }
+
+        /* جدول المؤشرات */
+        .indicator-row {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .indicator-row:hover { background: #fdfdfd; }
+        .indicator-name { flex: 1; font-size: 14px; padding-left: 10px; }
+        .indicator-weight {
+            background: #eee;
+            padding: 2px 8px;
+            border-radius: 5px;
+            font-size: 12px;
+            margin: 0 10px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* لوحة النتائج */
+        .result-panel {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            background: #f1f5f9;
+        }
+        .total-score { font-size: 32px; font-weight: bold; margin: 10px 0; }
+        
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        /* التجاوب مع الجوال */
+        @media (max-width: 600px) {
+            .indicator-row { flex-wrap: wrap; }
+            .indicator-name { width: 100%; margin-bottom: 8px; }
+        }
+    </style>
 </head>
 <body>
 
-<!-- شاشة الدخول -->
-<div id="lock">
-  <div class="container" style="max-width:400px;text-align:center">
-    <h3>نظام التقييم الميداني</h3>
-    <input id="pass" type="password" placeholder="رمز الدخول">
-    <button onclick="login()">دخول</button>
-    <p id="err" style="color:red;display:none">رمز غير صحيح</p>
-  </div>
+<div id="lock-screen">
+    <div class="login-card">
+        <h3>تسجيل دخول المفتش</h3>
+        <input type="password" id="pass" placeholder="أدخل رمز الدخول">
+        <button onclick="login()" style="margin-top:15px">دخول للنظام</button>
+        <p id="err" style="color:var(--danger); display:none; margin-top:10px; font-size:13px">الرمز غير صحيح!</p>
+    </div>
 </div>
 
-<!-- النظام -->
-<div id="main">
-<div class="container">
+<div id="main-app" style="display:none">
+    <div class="container">
+        <h2>نظام تقييم مخاطر التوطين</h2>
 
-<h2>نموذج المؤشرات والأوزان الاسترشادية</h2>
+        <div class="grid-inputs">
+            <input type="text" id="empName" placeholder="اسم الموظف">
+            <input type="text" id="empId" placeholder="رقم الهوية / الإقامة">
+            <input type="text" id="crNum" placeholder="رقم السجل التجاري">
+            <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
+        </div>
 
-<div class="section">
-  <input type="file" id="template" accept=".xlsx">
-  <input id="empName" placeholder="اسم العامل">
-  <input id="empId" placeholder="رقم الهوية / الإقامة">
-  <input id="crNum" placeholder="رقم السجل التجاري">
-  <input id="hrsdNum" placeholder="رقم المنشأة (700)">
+        <div class="section">
+            <h3>مؤشرات الاشتباه</h3>
+            <div id="indicators-container"></div>
+        </div>
+
+        <div class="result-panel">
+            <div>إجمالي نسبة المخاطر</div>
+            <div id="total" class="total-score">0%</div>
+            <div id="risk-level" style="font-weight:bold; margin-bottom:15px">حالة العمل: مستقرة</div>
+            
+            <select id="rec" style="margin-bottom:15px; background:white">
+                <option value="صحة علاقة العمل">توصية: صحة علاقة العمل</option>
+                <option value="عدم صحة علاقة العمل">توصية: اشتباه توطين وهمي</option>
+            </select>
+            
+            <textarea id="notes" placeholder="ملاحظات المفتش الميدانية..." rows="3"></textarea>
+        </div>
+
+        <button onclick="exportExcel()" style="margin-top:20px; background:var(--success)">تصدير التقرير النهائي (Excel)</button>
+    </div>
 </div>
-
-<div class="section">
-  <h3>المؤشرات (15)</h3>
-  <div id="table"></div>
-  <p><strong>المجموع:</strong> <span id="total">0</span>%</p>
-</div>
-
-<div class="section">
-  <select id="rec">
-    <option>صحة علاقة العمل</option>
-    <option>عدم صحة علاقة العمل</option>
-  </select>
-  <textarea id="notes" placeholder="ملاحظات إضافية"></textarea>
-</div>
-
-<button onclick="exportExcel()">تصدير التقرير الرسمي</button>
-
-</div>
-</div>
-
-<style>
-  
-  .risk-high { color: #c62828; font-weight: bold; border: 2px solid #c62828; padding: 10px; }
-  .risk-low { color: #2e7d32; }
-  .row:hover { background-color: #f1f1f1; cursor: pointer; }
-  input[type="checkbox"] { transform: scale(1.5); }
-</style>
 
 <script>
-function calc() {
-    let t = 0;
-    document.querySelectorAll("#table input:checked").forEach(c => t += Number(c.dataset.w));
-    
-    const totalEl = document.getElementById("total");
-    totalEl.innerText = t;
-
-    if (t >= 80) {
-        totalEl.className = "risk-high";
-        document.getElementById("rec").value = "عدم صحة علاقة العمل";
-    } else {
-        totalEl.className = "risk-low";
-        document.getElementById("rec").value = "صحة علاقة العمل";
-    }
-}
-
-// تحسين وظيفة التصدير لتكون أكثر مرونة
-function exportExcel() {
-    // التحقق من البيانات الأساسية
-    if(!document.getElementById("empName").value) {
-        alert("يرجى إدخال اسم العامل قبل التصدير");
-        return;
-    }
-
-    const data = [
-        ["تقرير تقييم التوطين"],
-        ["اسم العامل", document.getElementById("empName").value, "رقم الهوية", document.getElementById("empId").value],
-        ["رقم السجل", document.getElementById("crNum").value, "رقم المنشأة", document.getElementById("hrsdNum").value],
-        ["النتيجة النهائية", document.getElementById("rec").value, "إجمالي النقاط", document.getElementById("total").innerText + "%"],
-        [],
-        ["م", "المؤشر", "الوزن", "النتيجة"]
+    const PASSWORD = "1990"; // رمز الدخول البسيط
+    const criteria = [
+        ["إقرار صريح بعدم وجود علاقة عمل", 80],
+        ["مهنة لا تتناسب مع مؤهلات العامل", 60],
+        ["عدم تسجيل العمل عن بعد (للوظائف البعيدة)", 50],
+        ["عدم وجود مقر فعلي للمنشأة", 50],
+        ["عدم اكتمال ملف العامل (عقد، تأمين...)", 40],
+        ["عدم دفع الأجر عبر حماية الأجور", 30],
+        ["تبرير غير منطقي لتوقف الأجر", 30],
+        ["تضارب في تحديد طبيعة العمل", 30],
+        ["تضارب في تحديد موقع العمل", 20],
+        ["وجود سابقة توطين وهمي للمنشأة", 20],
+        ["عدم وجود تأمين طبي ساري", 20],
+        ["وجود صلة قرابة قوية", 10],
+        ["عدم تسكين العامل في المنشأة", 10],
+        ["عدم وجود عقد موثق", 10],
+        ["تضارب في معرفة نشاط المنشأة", 10]
     ];
 
-    criteria.forEach((c, i) => {
-        const checked = document.querySelectorAll("#table input")[i].checked ? "متحقق" : "غير متوفر";
-        data.push([i + 1, c[0], c[1] + "%", checked]);
+    function login() {
+        if(document.getElementById("pass").value === PASSWORD) {
+            document.getElementById("lock-screen").style.display = "none";
+            document.getElementById("main-app").style.display = "block";
+            renderIndicators();
+        } else {
+            document.getElementById("err").style.display = "block";
+        }
+    }
+
+    function renderIndicators() {
+        const container = document.getElementById("indicators-container");
+        container.innerHTML = criteria.map((c, i) => `
+            <div class="indicator-row" onclick="toggleCheck(${i})">
+                <input type="checkbox" id="check-${i}" data-w="${c[1]}" onchange="calculate()">
+                <span class="indicator-weight">${c[1]}%</span>
+                <span class="indicator-name">${c[0]}</span>
+            </div>
+        `).join('');
+    }
+
+    function toggleCheck(index) {
+        const cb = document.getElementById(`check-${index}`);
+        cb.checked = !cb.checked;
+        calculate();
+    }
+
+    // منع تكرار النقر عند الضغط على الـ Checkbox نفسه
+    document.addEventListener('change', (e) => {
+        if(e.target.type === 'checkbox') calculate();
     });
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "التقرير");
-    XLSX.writeFile(wb, `تقرير_${document.getElementById("empName").value}.xlsx`);
-}
+    function calculate() {
+        let score = 0;
+        document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
+            score += parseInt(cb.dataset.w);
+        });
+
+        const totalDisplay = document.getElementById("total");
+        const riskLevel = document.getElementById("risk-level");
+        const rec = document.getElementById("rec");
+
+        totalDisplay.innerText = score + "%";
+
+        if (score >= 80) {
+            totalDisplay.style.color = "var(--danger)";
+            riskLevel.innerText = "الحالة: خطورة عالية (اشتباه توطين وهمي)";
+            riskLevel.style.color = "var(--danger)";
+            rec.value = "عدم صحة علاقة العمل";
+        } else if (score >= 40) {
+            totalDisplay.style.color = "var(--warning)";
+            riskLevel.innerText = "الحالة: خطورة متوسطة (تحتاج تدقيق)";
+            riskLevel.style.color = "var(--warning)";
+            rec.value = "صحة علاقة العمل";
+        } else {
+            totalDisplay.style.color = "var(--success)";
+            riskLevel.innerText = "الحالة: طبيعية";
+            riskLevel.style.color = "var(--success)";
+            rec.value = "صحة علاقة العمل";
+        }
+    }
+
+    function exportExcel() {
+        const empName = document.getElementById("empName").value || "غير محدد";
+        
+        // تجهيز البيانات
+        const header = [["تقرير تفتيش ميداني - نظام التوطين"]];
+        const info = [
+            ["اسم العامل", empName, "رقم الهوية", document.getElementById("empId").value],
+            ["السجل التجاري", document.getElementById("crNum").value, "رقم المنشأة", document.getElementById("hrsdNum").value],
+            ["درجة المخاطر", document.getElementById("total").innerText, "التوصية", document.getElementById("rec").value],
+            ["ملاحظات", document.getElementById("notes").value],
+            []
+        ];
+        const tableHeader = [["م", "المؤشر", "الوزن", "النتيجة"]];
+        const rows = criteria.map((c, i) => [
+            i + 1, 
+            c[0], 
+            c[1] + "%", 
+            document.getElementById(`check-${i}`).checked ? "متحقق" : "غير متحقق"
+        ]);
+
+        const worksheet = XLSX.utils.aoa_to_sheet([...header, ...info, ...tableHeader, ...rows]);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "التقرير");
+        
+        XLSX.writeFile(workbook, `تقرير_تفتيش_${empName}.xlsx`);
+    }
 </script>
 
+</body>
+</html>
