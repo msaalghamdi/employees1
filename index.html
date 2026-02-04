@@ -11,266 +11,249 @@
             --success: #2e7d32;
             --warning: #f57c00;
             --danger: #d32f2f;
-            --bg: #f8fafc;
+            --bg: #eff2f5;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
             background-color: var(--bg);
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
         }
 
         .container {
-            max-width: 900px;
-            margin: auto;
+            width: 100%;
+            max-width: 800px;
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
-
-        h2, h3 { color: var(--primary); text-align: center; margin-bottom: 25px; }
 
         /* شاشة الدخول */
         #lock-screen {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
-        }
-        .login-card {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 350px;
             text-align: center;
-        }
-
-        /* تنسيق المدخلات */
-        .grid-inputs {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+            padding: 50px 20px;
         }
 
         input, select, textarea {
+            width: 100%;
             padding: 12px;
-            border: 1px solid #ddd;
+            margin: 8px 0;
+            border: 1px solid #ccc;
             border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            transition: 0.3s;
+            box-sizing: border-box;
+            font-size: 16px;
         }
 
-        input:focus { border-color: var(--primary); box-shadow: 0 0 5px rgba(26,95,122,0.2); }
+        .grid-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
 
-        /* جدول المؤشرات */
-        .indicator-row {
+        /* جدول المؤشرات المتجاوب */
+        .indicator-list {
+            margin-top: 20px;
+        }
+
+        .item {
             display: flex;
             align-items: center;
             padding: 12px;
             border-bottom: 1px solid #eee;
-            transition: background 0.2s;
+            cursor: pointer;
+            transition: 0.2s;
         }
-        .indicator-row:hover { background: #fdfdfd; }
-        .indicator-name { flex: 1; font-size: 14px; padding-left: 10px; }
-        .indicator-weight {
-            background: #eee;
-            padding: 2px 8px;
-            border-radius: 5px;
+
+        .item:hover { background: #f9f9f9; }
+
+        .item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+
+        .label-text { flex: 1; font-size: 15px; line-height: 1.4; }
+
+        .weight-badge {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 6px;
             font-size: 12px;
-            margin: 0 10px;
-            min-width: 40px;
-            text-align: center;
+            font-weight: bold;
         }
 
         /* لوحة النتائج */
-        .result-panel {
-            margin-top: 30px;
+        .score-box {
+            background: #f8fafc;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             text-align: center;
-            background: #f1f5f9;
+            margin: 20px 0;
+            border: 2px solid #e2e8f0;
         }
-        .total-score { font-size: 32px; font-weight: bold; margin: 10px 0; }
-        
+
+        .score-box.danger { border-color: var(--danger); background: #fff5f5; }
+        .score-box.success { border-color: var(--success); background: #f6fff6; }
+
+        .big-score { font-size: 40px; font-weight: bold; margin: 5px 0; }
+
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 15px 30px;
-            border-radius: 8px;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 18px;
             font-weight: bold;
             cursor: pointer;
             width: 100%;
-            font-size: 16px;
             transition: 0.3s;
         }
-        button:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* التجاوب مع الجوال */
+        button:active { transform: scale(0.98); }
+
         @media (max-width: 600px) {
-            .indicator-row { flex-wrap: wrap; }
-            .indicator-name { width: 100%; margin-bottom: 8px; }
+            .grid-info { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div id="lock-screen">
-    <div class="login-card">
-        <h3>تسجيل دخول المفتش</h3>
+<div class="container">
+    <div id="lock-screen">
+        <h2 style="color: var(--primary)">نظام التقييم الميداني</h2>
         <input type="password" id="pass" placeholder="أدخل رمز الدخول">
-        <button onclick="login()" style="margin-top:15px">دخول للنظام</button>
-        <p id="err" style="color:var(--danger); display:none; margin-top:10px; font-size:13px">الرمز غير صحيح!</p>
+        <button onclick="login()" style="margin-top: 10px">دخول</button>
+        <p id="err" style="color:red; display:none">الرمز غير صحيح</p>
     </div>
-</div>
 
-<div id="main-app" style="display:none">
-    <div class="container">
-        <h2>نظام تقييم مخاطر التوطين</h2>
-
-        <div class="grid-inputs">
-            <input type="text" id="empName" placeholder="اسم الموظف">
+    <div id="main-app" style="display:none">
+        <h2 style="text-align: center; color: var(--primary)">نموذج تقييم علاقة العمل</h2>
+        
+        <div class="grid-info">
+            <input type="text" id="empName" placeholder="اسم العامل">
             <input type="text" id="empId" placeholder="رقم الهوية / الإقامة">
-            <input type="text" id="crNum" placeholder="رقم السجل التجاري">
-            <input type="text" id="hrsdNum" placeholder="رقم المنشأة (700)">
         </div>
 
-        <div class="section">
-            <h3>مؤشرات الاشتباه</h3>
-            <div id="indicators-container"></div>
-        </div>
+        <div class="indicator-list" id="indicator-list">
+            </div>
 
-        <div class="result-panel">
-            <div>إجمالي نسبة المخاطر</div>
-            <div id="total" class="total-score">0%</div>
-            <div id="risk-level" style="font-weight:bold; margin-bottom:15px">حالة العمل: مستقرة</div>
-            
-            <select id="rec" style="margin-bottom:15px; background:white">
-                <option value="صحة علاقة العمل">توصية: صحة علاقة العمل</option>
-                <option value="عدم صحة علاقة العمل">توصية: اشتباه توطين وهمي</option>
+        <div class="score-box" id="result-card">
+            <div style="font-size: 14px; color: #666;">إجمالي مؤشرات الاشتباه</div>
+            <div class="big-score" id="total-score">0%</div>
+            <div id="status-text" style="font-weight: bold; margin-bottom: 10px;">الحالة: مستقرة</div>
+            <select id="final-rec">
+                <option value="صحة علاقة العمل">صحة علاقة العمل</option>
+                <option value="عدم صحة علاقة العمل (توطين وهمي)">عدم صحة علاقة العمل (توطين وهمي)</option>
             </select>
-            
-            <textarea id="notes" placeholder="ملاحظات المفتش الميدانية..." rows="3"></textarea>
+            <textarea id="notes" placeholder="ملاحظات المفتش الإضافية..." rows="3"></textarea>
         </div>
 
-        <button onclick="exportExcel()" style="margin-top:20px; background:var(--success)">تصدير التقرير النهائي (Excel)</button>
+        <button onclick="exportData()" style="background: var(--success);">تصدير التقرير (Excel)</button>
     </div>
 </div>
 
 <script>
-    const PASSWORD = "1990"; // رمز الدخول البسيط
+    // 1. ضع بيانات جدولك هنا (الاسم، والوزن)
     const criteria = [
-        ["إقرار صريح بعدم وجود علاقة عمل", 80],
-        ["مهنة لا تتناسب مع مؤهلات العامل", 60],
-        ["عدم تسجيل العمل عن بعد (للوظائف البعيدة)", 50],
-        ["عدم وجود مقر فعلي للمنشأة", 50],
-        ["عدم اكتمال ملف العامل (عقد، تأمين...)", 40],
+        ["عدم وجود عقد عمل موثق", 10],
+        ["عدم وجود تأمين طبي للعامل", 20],
+        ["موقع العمل (إجابة غير صحيحة)", 20],
+        ["طبيعة العمل (إجابة غير صحيحة)", 30],
+        ["نشاط المنشأة (إجابة غير صحيحة)", 10],
+        ["إقرار بعدم وجود علاقة عمل فعلية", 80],
         ["عدم دفع الأجر عبر حماية الأجور", 30],
-        ["تبرير غير منطقي لتوقف الأجر", 30],
-        ["تضارب في تحديد طبيعة العمل", 30],
-        ["تضارب في تحديد موقع العمل", 20],
-        ["وجود سابقة توطين وهمي للمنشأة", 20],
-        ["عدم وجود تأمين طبي ساري", 20],
-        ["وجود صلة قرابة قوية", 10],
-        ["عدم تسكين العامل في المنشأة", 10],
-        ["عدم وجود عقد موثق", 10],
-        ["تضارب في معرفة نشاط المنشأة", 10]
+        ["وجود صلة قرابة", 10],
+        ["عدم تسجيل العمل عن بعد", 50],
+        ["تبرير عدم صرف الأجر 3 أشهر", 30],
+        ["مهنة لا تتناسب مع القدرات", 60],
+        ["عدم وجود مقر للمنشأة", 50],
+        ["عدم اكتمال ملف العامل", 40]
     ];
 
     function login() {
-        if(document.getElementById("pass").value === PASSWORD) {
+        if(document.getElementById("pass").value === "1990") {
             document.getElementById("lock-screen").style.display = "none";
             document.getElementById("main-app").style.display = "block";
-            renderIndicators();
+            initIndicators();
         } else {
             document.getElementById("err").style.display = "block";
         }
     }
 
-    function renderIndicators() {
-        const container = document.getElementById("indicators-container");
-        container.innerHTML = criteria.map((c, i) => `
-            <div class="indicator-row" onclick="toggleCheck(${i})">
-                <input type="checkbox" id="check-${i}" data-w="${c[1]}" onchange="calculate()">
-                <span class="indicator-weight">${c[1]}%</span>
-                <span class="indicator-name">${c[0]}</span>
+    function initIndicators() {
+        const list = document.getElementById("indicator-list");
+        list.innerHTML = criteria.map((c, i) => `
+            <div class="item" onclick="toggle(${i})">
+                <input type="checkbox" id="c-${i}" data-w="${c[1]}" onchange="calculate()">
+                <div class="label-text">${c[0]}</div>
+                <div class="weight-badge">${c[1]}%</div>
             </div>
         `).join('');
     }
 
-    function toggleCheck(index) {
-        const cb = document.getElementById(`check-${index}`);
+    function toggle(i) {
+        const cb = document.getElementById(`c-${i}`);
         cb.checked = !cb.checked;
         calculate();
     }
 
-    // منع تكرار النقر عند الضغط على الـ Checkbox نفسه
-    document.addEventListener('change', (e) => {
-        if(e.target.type === 'checkbox') calculate();
-    });
-
     function calculate() {
-        let score = 0;
+        let total = 0;
         document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
-            score += parseInt(cb.dataset.w);
+            total += parseInt(cb.dataset.w);
         });
 
-        const totalDisplay = document.getElementById("total");
-        const riskLevel = document.getElementById("risk-level");
-        const rec = document.getElementById("rec");
+        const scoreEl = document.getElementById("total-score");
+        const statusEl = document.getElementById("status-text");
+        const card = document.getElementById("result-card");
+        const rec = document.getElementById("final-rec");
 
-        totalDisplay.innerText = score + "%";
+        scoreEl.innerText = total + "%";
 
-        if (score >= 80) {
-            totalDisplay.style.color = "var(--danger)";
-            riskLevel.innerText = "الحالة: خطورة عالية (اشتباه توطين وهمي)";
-            riskLevel.style.color = "var(--danger)";
-            rec.value = "عدم صحة علاقة العمل";
-        } else if (score >= 40) {
-            totalDisplay.style.color = "var(--warning)";
-            riskLevel.innerText = "الحالة: خطورة متوسطة (تحتاج تدقيق)";
-            riskLevel.style.color = "var(--warning)";
-            rec.value = "صحة علاقة العمل";
+        if(total >= 80) {
+            card.className = "score-box danger";
+            statusEl.innerText = "الحالة: اشتباه عالي جداً";
+            statusEl.style.color = "var(--danger)";
+            rec.value = "عدم صحة علاقة العمل (توطين وهمي)";
         } else {
-            totalDisplay.style.color = "var(--success)";
-            riskLevel.innerText = "الحالة: طبيعية";
-            riskLevel.style.color = "var(--success)";
+            card.className = "score-box success";
+            statusEl.innerText = "الحالة: طبيعية / تدقيق منخفض";
+            statusEl.style.color = "var(--success)";
             rec.value = "صحة علاقة العمل";
         }
     }
 
-    function exportExcel() {
-        const empName = document.getElementById("empName").value || "غير محدد";
-        
-        // تجهيز البيانات
-        const header = [["تقرير تفتيش ميداني - نظام التوطين"]];
-        const info = [
-            ["اسم العامل", empName, "رقم الهوية", document.getElementById("empId").value],
-            ["السجل التجاري", document.getElementById("crNum").value, "رقم المنشأة", document.getElementById("hrsdNum").value],
-            ["درجة المخاطر", document.getElementById("total").innerText, "التوصية", document.getElementById("rec").value],
-            ["ملاحظات", document.getElementById("notes").value],
-            []
+    function exportData() {
+        const name = document.getElementById("empName").value || "بدون_اسم";
+        const rows = [
+            ["تقرير التقييم الميداني الرسمي"],
+            ["اسم العامل", document.getElementById("empName").value],
+            ["رقم الهوية", document.getElementById("empId").value],
+            ["السجل التجاري", document.getElementById("crNum").value],
+            ["رقم المنشأة", document.getElementById("hrsdNum").value],
+            ["النتيجة الإجمالية", document.getElementById("total-score").innerText],
+            ["التوصية النهائية", document.getElementById("final-rec").value],
+            ["الملاحظات", document.getElementById("notes").value],
+            [],
+            ["المؤشر", "الوزن", "الحالة"]
         ];
-        const tableHeader = [["م", "المؤشر", "الوزن", "النتيجة"]];
-        const rows = criteria.map((c, i) => [
-            i + 1, 
-            c[0], 
-            c[1] + "%", 
-            document.getElementById(`check-${i}`).checked ? "متحقق" : "غير متحقق"
-        ]);
 
-        const worksheet = XLSX.utils.aoa_to_sheet([...header, ...info, ...tableHeader, ...rows]);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "التقرير");
-        
-        XLSX.writeFile(workbook, `تقرير_تفتيش_${empName}.xlsx`);
+        criteria.forEach((c, i) => {
+            const checked = document.getElementById(`c-${i}`).checked ? "متحقق" : "غير متحقق";
+            rows.push([c[0], c[1] + "%", checked]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "التقرير");
+        XLSX.writeFile(wb, `تقرير_${name}.xlsx`);
     }
 </script>
 
