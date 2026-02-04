@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التقييم الميداني - نسخة احترافية</title>
+    <title>نظام التقييم الميداني - نسخة الجوال</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         :root {
@@ -29,11 +29,12 @@
         #lock-screen { text-align: center; padding: 50px 20px; }
 
         input, select, textarea {
-            width: 100%; padding: 12px; margin: 8px 0;
+            width: 100%; padding: 14px; margin: 8px 0;
             border: 1px solid #ccc; border-radius: 8px;
             box-sizing: border-box; font-size: 16px;
         }
 
+        /* تعديل الحقول لتصبح اسماً وهويّة فقط */
         .grid-info { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
         .item {
@@ -46,10 +47,10 @@
 
         .item input[type="checkbox"] {
             width: 25px; height: 25px; margin-left: 15px;
-            pointer-events: none; /* لمنع تداخل النقرات */
+            pointer-events: none;
         }
 
-        .label-text { flex: 1; font-size: 16px; pointer-events: none; }
+        .label-text { flex: 1; font-size: 15px; line-height: 1.5; pointer-events: none; }
 
         .weight-badge {
             background: #e3f2fd; color: #1976d2;
@@ -72,8 +73,6 @@
             width: 100%; transition: 0.3s;
         }
 
-        button:active { transform: scale(0.98); }
-
         @media (max-width: 600px) { .grid-info { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -82,7 +81,7 @@
 <div class="container">
     <div id="lock-screen">
         <h2>نظام المراقب الميداني</h2>
-        <input type="password" id="pass" placeholder="رمز الدخول (ادخل)">
+        <input type="password" id="pass" placeholder="رمز الدخول (1990)">
         <button onclick="login()" style="margin-top: 15px">دخول النظام</button>
         <p id="err" style="color:red; display:none; margin-top:10px">الرمز غير صحيح</p>
     </div>
@@ -96,7 +95,7 @@
         </div>
 
         <div id="indicator-list" style="margin-top: 20px; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
-            </div>
+        </div>
 
         <div class="score-box" id="result-card">
             <div style="font-size: 16px;">مجموع أوزان المخاطر</div>
@@ -121,16 +120,16 @@
         ["موقع العمل (إجابة غير صحيحة/مبهمة)", 20],
         ["طبيعة العمل (إجابة غير صحيحة/مبهمة)", 30],
         ["نشاط المنشأة (إجابة غير صحيحة/مبهمة)", 10],
-        ["إقرار العامل او صاحب العمل  بعدم وجود علاقة عمل فعلية", 80],
+        ["إقرار العامل او صاحب العمل بعدم وجود علاقة عمل فعلية", 80],
         ["عدم دفع الأجر عبر حماية الأجور", 30],
         ["وجود صلة قرابة", 10],
-        ["عدم تسجيل العمل في منصة العمل  عن بعد", 50],
-        [" وجود تبرير من المنشاة عدم صرف الأجر 3 أشهر", 30],
+        ["عدم تسجيل العمل في منصة العمل عن بعد", 50],
+        ["وجود تبرير من المنشاة عدم صرف الأجر 3 أشهر", 30],
         ["عدم تسكين العامل على المنشأة", 10],
-        ["توظيف نساء او شخص كبير في السن او ذوي الاعاقة بمهنة لا تتوافق مع قدراته على ادائها ", 60],
+        ["توظيف نساء او شخص كبير في السن او ذوي الاعاقة بمهنة لا تتوافق مع قدراته", 60],
         ["وجود سابقة توطين وهمي", 20],
         ["عدم وجود مقر للمنشأة", 50],
-        ["عدم وجود ملف للعامل السعودي او عدم اكتمالة بما يتمضن اجازات قرارات حضور و انصراف ", 40]
+        ["عدم وجود ملف للعامل السعودي او عدم اكتمالة (إجازات، حضور وانصراف)", 40]
     ];
 
     function login() {
@@ -165,11 +164,9 @@
         document.querySelectorAll('input[type="checkbox"]:checked').forEach(cb => {
             total += parseInt(cb.dataset.w);
         });
-
         document.getElementById("total-score").innerText = total + "%";
         const statusText = document.getElementById("status-text");
         const rec = document.getElementById("final-rec");
-
         if(total >= 80) {
             statusText.innerText = "الحالة: اشتباه توطين وهمي";
             statusText.style.color = "var(--danger)";
@@ -183,23 +180,19 @@
 
     function exportExcel() {
         const empName = document.getElementById("empName").value || "بدون اسم";
-        
-        // 1. بناء هيكل البيانات
         const wb = XLSX.utils.book_new();
         
-        // الصف الأول المدمج (العنوان)
+        // الصف الأول المدمج كعنوان للجدول
         const headerTitle = [["جدول المؤشرات و الاوزان الاسترشادية للمراقب"]];
         
-        // بيانات العامل والمنشأة
+        // بيانات العامل والتوصية (تم حذف السجل و700)
         const infoData = [
             ["اسم العامل", empName, "رقم الهوية", document.getElementById("empId").value],
-            ["السجل التجاري", document.getElementById("crNum").value, "رقم المنشأة", document.getElementById("hrsdNum").value],
             ["النتيجة النهائية", document.getElementById("total-score").innerText, "التوصية", document.getElementById("final-rec").value],
             ["ملاحظات المراقب", document.getElementById("notes").value],
-            [] // صف فارغ
+            []
         ];
 
-        // جدول المؤشرات
         const tableHead = [["م", "المؤشر", "الوزن الاسترشادي", "الحالة (نعم/لا)"]];
         const tableRows = criteria.map((c, i) => [
             i + 1,
@@ -208,28 +201,19 @@
             document.getElementById(`check-${i}`).checked ? "نعم" : "لا"
         ]);
 
-        // دمج كل البيانات في مصفوفة واحدة
         const finalContent = [...headerTitle, ...infoData, ...tableHead, ...tableRows];
-
-        // تحويل المصفوفة إلى ورقة عمل
         const ws = XLSX.utils.aoa_to_sheet(finalContent);
 
-        // --- عملية الدمج (Merging) ---
-        // دمج العنوان من A1 إلى D1
-        ws['!merges'] = [
-            { s: { r: 0, c: 0 }, e: { r: 0, c: 3 } } // دمج أول صف لـ 4 أعمدة
-        ];
+        // دمج العنوان في الصف الأول عبر 4 أعمدة
+        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }];
 
-        // ضبط عرض الأعمدة لتكون واضحة
-        ws['!cols'] = [{ wch: 5 }, { wch: 45 }, { wch: 15 }, { wch: 15 }];
+        // تحديد عرض الأعمدة (م، المؤشر، الوزن، الحالة)
+        ws['!cols'] = [{ wch: 5 }, { wch: 60 }, { wch: 15 }, { wch: 15 }];
 
-        XLSX.utils.book_append_sheet(wb, ws, "تقرير التفتيش");
-        
-        // التصدير الفعلي
-        XLSX.writeFile(wb, `تقرير_االمرشرات_والاوزان_${empName}.xlsx`);
+        XLSX.utils.book_append_sheet(wb, ws, "التقرير");
+        XLSX.writeFile(wb, `تقرير_المؤشرات_والاوزان_${empName}.xlsx`);
     }
 </script>
 
 </body>
 </html>
-
